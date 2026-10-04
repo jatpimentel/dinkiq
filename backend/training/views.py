@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from rest_framework import status
 
-from .models import Skill,Difficulty
-from .serializers import SkillSerializer, DifficultySerializer
+from .models import Skill,Difficulty, Lesson
+from .serializers import SkillSerializer, DifficultySerializer, LessonSerializer
 # Create your views here.
 
 @api_view(['POST'])
@@ -53,5 +53,12 @@ def skills(request):
 def difficulties(request):
     difficulties = Difficulty.objects.all()
     serializer = DifficultySerializer(difficulties, many=True)
+
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def lessons(request):
+    lessons = Lesson.objects.all()
+    serializer = LessonSerializer(lessons, many=True)
 
     return Response(serializer.data)

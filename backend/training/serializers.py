@@ -10,3 +10,8 @@ class DifficultySerializer(serializers.ModelSerializer):
     class Meta:
         model = Difficulty
         fields = ['id', 'name']
+
+class LessonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = ['id', 'name', 'skill', 'difficulty']
