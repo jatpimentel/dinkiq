@@ -3,6 +3,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from rest_framework import status
+
+from .models import Skill,Difficulty
+from .serializers import SkillSerializer, DifficultySerializer
 # Create your views here.
 
 @api_view(['POST'])
@@ -41,17 +44,14 @@ def register(request):
 
 @api_view(['GET'])
 def skills(request):
-    return Response([
-        {
-            "id": 1,
-            "name": "Dinking"
-        },
-        {
-            "id": 2,
-            "name": "Serving"
-        },
-        {
-            "id": 3,
-            "name": "Third Shot Drop"
-        }
-    ])
+    skills = Skill.objects.all()
+    serializer = SkillSerializer(skills, many=True)
+
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def difficulties(request):
+    difficulties = Difficulty.objects.all()
+    serializer = DifficultySerializer(difficulties, many=True)
+
+    return Response(serializer.data)
