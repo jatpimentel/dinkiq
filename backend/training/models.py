@@ -29,5 +29,17 @@ class Lesson(models.Model):
     )
 
     def __str__(self):
-        return self.title
-    
+        return self.name
+
+class Drill(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=100)
+    lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.CASCADE,
+        related_name="drills"
+    )
+    duration_minutes = models.PositiveIntegerField(default=10)
+
+    def __str__(self):
+        return self.name
