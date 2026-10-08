@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Skill,Difficulty,Lesson,Drill
+from .models import Skill,Difficulty,Lesson,Drill,UserSkillProgress
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,3 +20,12 @@ class DrillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Drill
         fields = ['id', 'name', 'lesson', 'duration_minutes']
+
+class UserSkillProgressSerializer(serializers.ModelSerializer):
+    skill_name = serializers.CharField(
+        source='skill.name',
+        read_only=True
+    )
+    class Meta:
+        model = UserSkillProgress
+        fields = ['id', 'skill', 'skill_name', 'level', 'progress', 'last_practiced']

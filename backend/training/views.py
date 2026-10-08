@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.models import User
 from rest_framework import status
 
-from .models import Skill,Difficulty, Lesson
-from .serializers import SkillSerializer, DifficultySerializer, LessonSerializer
+from .models import Skill,Difficulty, Lesson, Drill, UserSkillProgress
+from .serializers import SkillSerializer, DifficultySerializer, LessonSerializer, UserSkillProgressSerializer
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 @api_view(['POST'])
@@ -60,5 +61,19 @@ def difficulties(request):
 def lessons(request):
     lessons = Lesson.objects.all()
     serializer = LessonSerializer(lessons, many=True)
+
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_progress(request):
+    progress = UserSkillProgress.objects.filter(
+        user = request.user
+    )
+
+    serializer = UserSkillProgressSerializer(
+        progress,
+        many=True
+    )
 
     return Response(serializer.data)
