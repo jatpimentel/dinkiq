@@ -78,6 +78,30 @@ def user_progress(request):
 
     return Response(serializer.data)
 
+
+def update_skill_progress(user, skill):
+    total_lessons = Lesson.objects.filter(skill=skill).count()
+
+    progress_record, _ = UserSkillProgress.objects.get_or_create(
+        user=user,
+        skill=skill,
+        defaults={'level': 'Beginner', 'progress': 0}
+    )
+
+    if total_lessons == 0:
+        progress_record.progress = 0
+    else:
+        completed_lessons = UserLessonCompletion.objects.filter(
+            user=user,
+            lesson__skill=skill
+        ).count()
+
+        progress_record.progress = round(
+            completed_lessons / total_lessons * 100
+        )
+
+    progress_record.save()
+    
 @api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
 def lesson_completions(request):
@@ -89,7 +113,7 @@ def lesson_completions(request):
             completions,
             many=True
         )
-        serializer = UserLessonCompletionsSerializer(
+        serializer = UserLessonCompletionSerializer(
             completions,
             many=True
         )
@@ -105,10 +129,13 @@ def lesson_completions(request):
 
     lesson = get_object_or_404(Lesson, id=lesson_id)
 
+    
     completion, created = UserLessonCompletion.objects.get_or_create(
         user=request.user,
         lesson=lesson
     )
+
+    update_skill_progress(request.user, lesson.skill)
 
     serializer = UserLessonCompletionSerializer(completion)
 
