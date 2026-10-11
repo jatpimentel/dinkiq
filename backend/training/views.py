@@ -3,9 +3,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.models import User
 from rest_framework import status
-
-from .models import Skill,Difficulty, Lesson, Drill, UserSkillProgress
-from .serializers import SkillSerializer, DifficultySerializer, LessonSerializer, UserSkillProgressSerializer
+from django.shortcuts import get_object_or_404
+from .models import Skill,Difficulty, Lesson, Drill, UserSkillProgress, UserLessonCompletion
+from .serializers import SkillSerializer, DifficultySerializer, LessonSerializer, UserSkillProgressSerializer, UserLessonCompletionSerializer
 from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
@@ -77,3 +77,49 @@ def user_progress(request):
     )
 
     return Response(serializer.data)
+
+@api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
+def lesson_completions(request):
+    if request.method == "GET":
+        completions = UserLessonCompletion.object.filter(
+            user=request.user
+        )
+        serializer = UserLessonCompletionSerializer(
+            completions,
+            many=True
+        )
+        serializer = UserLessonCompletionsSerializer(
+            completions,
+            many=True
+        )
+        return Response(serializer.data)
+
+    lesson_id = request.data.get('lesson_id')
+
+    if not lesson_id:
+        return Response(
+            {'error': 'lesson_id is required.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+
+    completion, created = UserLessonCompletion.objects.get_or_create(
+        user=request.user,
+        lesson=lesson
+    )
+
+    serializer = UserLessonCompletionSerializer(completion)
+
+    return Response(
+        {
+            'message': (
+                'Lesson marked as completed.'
+                if created
+                else 'Lesson was already completed.'
+            ),
+            'completion': serializer.data
+        },
+        status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
+    )

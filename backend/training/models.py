@@ -79,3 +79,29 @@ class UserSkillProgress(models.Model):
         
     def __str__(self):
         return f"{self.user.username} - {self.skill.name}"
+
+class UserLessonCompletion(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='lesson_completions'
+    )
+
+    lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.CASCADE,
+        related_name='user_completions'
+    )
+    completed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user','lesson'],
+                name='unique_user_lesson_completion'
+            )
+        ]
+        ordering = ['-completed_at']
+
+    def __str__(self):
+        return f"{self.user.username} completed {self.lesson.title}"
