@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./pages/Authentication/Login";
 import Register from "./pages/Authentication/Register";
-import Dashboard from "./pages/Dashboard";
-import Landing from "./pages/Landing";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Landing from "./pages/Landing/Landing";
 
 function ProtectedRoute({ children }) {
     const token = localStorage.getItem("access");

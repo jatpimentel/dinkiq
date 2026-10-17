@@ -144,13 +144,13 @@
 
 /* ---------- Hero ---------- */
 .landing .hero {
-    max-width: calc(var(--container) + 80px);
-    margin: 70px auto 0;
+    max-width: calc(var(--container) + 64px);
+    margin: 60px auto 0;
     padding: 0 32px;
     display: grid;
-    grid-template-columns: 1fr minmax(320px, 550px);
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
     align-items: center;
-    gap: 8px;
+    gap: 56px;
 }
 
 .landing .hero-kicker {
@@ -160,16 +160,12 @@
 }
 
 .landing .hero h1 {
-    font-size: clamp(38px, 5vw, 60px);
-    line-height: 1.02;
+    font-size: clamp(36px, 4.4vw, 56px);
+    line-height: 1.05;
     font-weight: 800;
     letter-spacing: -0.015em;
     color: #000;
     margin-bottom: 24px;
-    /* lets the headline run slightly under the image gap like the design */
-    margin-right: -20px;
-    position: relative;
-    z-index: 1;
 }
 
 .landing .hero-desc {
@@ -186,10 +182,10 @@
 }
 
 .landing .hero-image {
-    height: 400px;
+    height: 460px;
     overflow: hidden;
-    /* rounded only on top-right and bottom-right, like the design */
-    border-radius: 0 70px 70px 0;
+    border-radius: 36px;
+    box-shadow: 0 24px 48px rgba(18, 28, 21, 0.14);
 }
 
 /* ---------- Lessons ---------- */
@@ -360,7 +356,7 @@
     }
 
     .landing .hero-image {
-        border-radius: 40px;
+        height: 380px;
     }
 
     .landing .lessons {
@@ -394,7 +390,8 @@
     }
 
     .landing .hero-image {
-        height: 300px;
+        height: 280px;
+        border-radius: 28px;
     }
 
     .landing .lessons {
@@ -421,4 +418,9 @@
         transition: none !important;
         scroll-behavior: auto !important;
     }
+}
+
+/* Smooth scrolling for the navbar links (Home, Service, Contact) */
+html {
+    scroll-behavior: smooth;
 }

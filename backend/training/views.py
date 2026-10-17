@@ -4,10 +4,17 @@ from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.models import User
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .models import Skill,Difficulty, Lesson, Drill, UserSkillProgress, UserLessonCompletion
-from .serializers import SkillSerializer, DifficultySerializer, LessonSerializer, UserSkillProgressSerializer, UserLessonCompletionSerializer
+from .models import Skill,Difficulty, Lesson, Drill, UserSkillProgress, UserLessonCompletion, ContactMessage
+from .serializers import SkillSerializer, DifficultySerializer, LessonSerializer, UserSkillProgressSerializer, UserLessonCompletionSerializer,ContactMessageSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
+from django.db.models import Prefetch
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .models import Lesson, Skill, UserLessonCompletion, UserSkillProgress
 # Create your views here.
 
 @api_view(['POST'])
@@ -165,3 +172,106 @@ def skill_list(request):
             for s in skills
         ]
     })
+
+class ContactCreateView(generics.CreateAPIView):
+    queryset = ContactMessage.objects.all()
+    serializer_class = ContactMessageSerializer
+    permission_classes = [AllowAny]
+
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        completions = {
+            c.lesson_id: c.completed_at
+            for c in UserLessonCompletion.objects.filter(user=user)
+        }
+        skill_progress = {
+            p.skill_id: p for p in UserSkillProgress.objects.filter(user=user)
+        }
+
+        skills_qs = Skill.objects.order_by("id").prefetch_related(
+            Prefetch(
+                "lesson_set",
+                queryset=Lesson.objects.select_related("difficulty")
+                .prefetch_related("drills")
+                .order_by("id"),
+            )
+        )
+
+        skills = []
+        total_lessons = completed_total = drills_total = 0
+        mastered = in_progress = 0
+
+        for skill in skills_qs:
+            lessons = []
+            for lesson in skill.lesson_set.all():
+                drills = list(lesson.drills.all())
+                done_at = completions.get(lesson.id)
+                lessons.append({
+                    "id": lesson.id,
+                    "name": lesson.name,
+                    "description": lesson.description,
+                    "difficulty": {
+                        "id": lesson.difficulty.id,
+                        "name": lesson.difficulty.name,
+                    },
+                    "completed": done_at is not None,
+                    "completed_at": done_at.isoformat() if done_at else None,
+                    "drill_count": len(drills),
+                    "total_minutes": sum(d.duration_minutes for d in drills),
+                })
+                drills_total += len(drills)
+
+            total = len(lessons)
+            done = sum(1 for l in lessons if l["completed"])
+            progress = round(done / total * 100) if total else 0
+
+            if total and done == total:
+                mastered += 1
+            elif done > 0:
+                in_progress += 1
+
+            total_lessons += total
+            completed_total += done
+
+            sp = skill_progress.get(skill.id)
+            skills.append({
+                "id": skill.id,
+                "name": skill.name,
+                "level": sp.level if sp else "Beginner",
+                "last_practiced": (
+                    sp.last_practiced.isoformat()
+                    if sp and sp.last_practiced else None
+                ),
+                "lessons_total": total,
+                "lessons_completed": done,
+                "progress": progress,
+                "lessons": lessons,
+            })
+
+        recent = [
+            {
+                "lesson_id": c.lesson_id,
+                "lesson": c.lesson.name,
+                "skill": c.lesson.skill.name,
+                "completed_at": c.completed_at.isoformat(),
+            }
+            for c in UserLessonCompletion.objects.filter(user=user)
+            .select_related("lesson__skill")[:5]
+        ]
+
+        return Response({
+            "user": {"name": user.get_full_name() or user.username},
+            "stats": {
+                "skills_mastered": mastered,
+                "skills_in_progress": in_progress,
+                "lessons_completed": completed_total,
+                "total_lessons": total_lessons,
+                "drills_available": drills_total,
+            },
+            "skills": skills,
+            "recent": recent,
+        })

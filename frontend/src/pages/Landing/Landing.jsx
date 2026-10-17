@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import api from "../services/api"; // adjust the path to where your api.js is
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api"; // adjust the path to where your api.js is
+import heroImage from "../../assets/hero-player.jpg";
+import Contact from "./Contact";
 import "./Landing.css";
 
-// Replace these with your own pickleball photos (e.g. put them in /public/images)
-const HERO_IMAGE = "/images/hero-player.jpg";
 
 function Landing() {
+    const navigate = useNavigate();
     const carouselRef = useRef(null);
     const [skills, setSkills] = useState([]);
     const [status, setStatus] = useState("loading"); // loading | ready | error
@@ -29,6 +31,12 @@ function Landing() {
         el.scrollBy({ left: step, behavior: "smooth" });
     };
 
+    const scrollToServices = () => {
+        document
+            .getElementById("services")
+            ?.scrollIntoView({ behavior: "smooth" });
+    };
+
     return (
         <div className="landing">
             {/* NAVBAR */}
@@ -46,7 +54,12 @@ function Landing() {
                         <a href="#contact">Contact</a>
                     </nav>
 
-                    <button className="btn btn-primary btn-login">Login</button>
+                    <button
+                        className="btn btn-primary btn-login"
+                        onClick={() => navigate("/login")}
+                    >
+                        Login
+                    </button>
                 </div>
             </header>
 
@@ -65,15 +78,26 @@ function Landing() {
                     </p>
 
                     <div className="hero-actions">
-                        <button className="btn btn-primary">Get Start Now</button>
-                        <button className="btn btn-outline">
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => navigate("/register")}
+                        >
+                            Get Start Now
+                        </button>
+                        <button
+                            className="btn btn-outline"
+                            onClick={scrollToServices}
+                        >
                             View all Services
                         </button>
                     </div>
                 </div>
 
                 <div className="hero-image">
-                    <img src={HERO_IMAGE} alt="Pickleball player holding a paddle on the court" />
+                    <img
+                        src={heroImage}
+                        alt="Pickleball player holding a paddle on the court"
+                    />
                 </div>
             </section>
 
@@ -100,7 +124,8 @@ function Landing() {
                         )}
                         {status === "error" && (
                             <p className="lessons-message">
-                                Lessons could not be loaded. Please try again later.
+                                Lessons could not be loaded. Please try again
+                                later.
                             </p>
                         )}
                         {status === "ready" && skills.length === 0 && (
@@ -122,7 +147,10 @@ function Landing() {
                                 <h3>{skill.name}</h3>
                                 <p>{skill.description}</p>
 
-                                <button className="btn btn-book">
+                                <button
+                                    className="btn btn-book"
+                                    onClick={() => navigate("/login")}
+                                >
                                     Book Now
                                     <svg
                                         width="16"
@@ -161,6 +189,9 @@ function Landing() {
                     </button>
                 </div>
             </section>
+
+            {/* BLOG + CONTACT */}
+            <Contact />
         </div>
     );
 }

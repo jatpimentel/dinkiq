@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Skill,Difficulty,Lesson,Drill,UserSkillProgress,UserLessonCompletion
+from .models import Skill,Difficulty,Lesson,Drill,UserSkillProgress,UserLessonCompletion,ContactMessage
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
@@ -55,3 +55,9 @@ class UserLessonCompletionSerializer(serializers.ModelSerializer):
             'skill_name',
             'completed_at'
         ]
+
+# serializers.py
+class ContactMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactMessage
+        fields = ["name", "email", "message"]
