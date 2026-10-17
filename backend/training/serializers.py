@@ -4,7 +4,7 @@ from .models import Skill,Difficulty,Lesson,Drill,UserSkillProgress,UserLessonCo
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
-        fields = ['id', 'name', 'description']
+        fields = ['id', 'name', 'description', 'image']
 
 class DifficultySerializer(serializers.ModelSerializer):
     class Meta:

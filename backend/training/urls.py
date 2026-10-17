@@ -4,7 +4,9 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from .views import register, skills, difficulties, lessons, user_progress, lesson_completions
-
+from django.conf import settings
+from django.conf.urls.static import static
+from . import views
 urlpatterns = [
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
@@ -14,4 +16,5 @@ urlpatterns = [
     path('lessons/', lessons, name='lessons' ),
     path('progress/', user_progress, name="user_progress"),
     path('lesson-completions/', lesson_completions, name="lesson-completions"),
-]
+    path("api/skills/", views.skill_list),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from .models import Skill,Difficulty, Lesson, Drill, UserSkillProgress, UserLessonCompletion
 from .serializers import SkillSerializer, DifficultySerializer, LessonSerializer, UserSkillProgressSerializer, UserLessonCompletionSerializer
 from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse
 # Create your views here.
 
 @api_view(['POST'])
@@ -150,3 +151,17 @@ def lesson_completions(request):
         },
         status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
     )
+
+def skill_list(request):
+    skills = Skill.objects.order_by("id")
+    return JsonResponse({
+        "skills": [
+            {
+                "id": s.id,
+                "name": s.name,
+                "description": s.description,
+                "image": request.build_absolute_uri(s.image.url) if s.image else None,
+            }
+            for s in skills
+        ]
+    })
