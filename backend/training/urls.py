@@ -19,4 +19,5 @@ urlpatterns = [
     path("api/skills/", views.skill_list),
     path("contact/", views.ContactCreateView.as_view()),
     path("dashboard/", views.DashboardView.as_view()),
+    path("lessons/<int:lesson_id>/complete/", views.LessonCompleteView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

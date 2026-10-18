@@ -458,6 +458,10 @@
     transition: border-color 0.2s, transform 0.2s;
 }
 
+.dash .lesson-card {
+    cursor: pointer;
+}
+
 .dash .lesson-card:hover {
     border-color: var(--green-line);
     transform: translateY(-1px);
@@ -743,4 +747,15 @@
     .dash * {
         transition: none !important;
     }
+}
+
+
+/* ---------- clickable rows ---------- */
+.dash .list-row.clickable {
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.dash .list-row.clickable:hover {
+    background: var(--green-soft);
 }

@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Lesson, Skill, UserLessonCompletion, UserSkillProgress
+from django.utils import timezone
 # Create your views here.
 
 @api_view(['POST'])
@@ -222,6 +223,15 @@ class DashboardView(APIView):
                     "completed_at": done_at.isoformat() if done_at else None,
                     "drill_count": len(drills),
                     "total_minutes": sum(d.duration_minutes for d in drills),
+                    "drills": [
+                        {
+                            "id": d.id,
+                            "name": d.name,
+                            "description": d.description,
+                            "duration_minutes": d.duration_minutes,
+                        }
+                        for d in sorted(drills, key=lambda d: d.id)
+                    ],
                 })
                 drills_total += len(drills)
 
@@ -241,6 +251,11 @@ class DashboardView(APIView):
             skills.append({
                 "id": skill.id,
                 "name": skill.name,
+                "description": skill.description,
+                "image": (
+                    request.build_absolute_uri(skill.image.url)
+                    if skill.image else None
+                ),
                 "level": sp.level if sp else "Beginner",
                 "last_practiced": (
                     sp.last_practiced.isoformat()
@@ -275,3 +290,39 @@ class DashboardView(APIView):
             "skills": skills,
             "recent": recent,
         })
+
+def sync_skill_progress(user, skill, practiced=False):
+    total = Lesson.objects.filter(skill=skill).count()
+    done = UserLessonCompletion.objects.filter(
+        user=user, lesson__skill=skill
+    ).count()
+
+    sp, _ = UserSkillProgress.objects.get_or_create(user=user, skill=skill)
+    sp.progress = round(done / total * 100) if total else 0
+    if practiced:
+        sp.last_practiced = timezone.now()
+    sp.save()
+
+
+class LessonCompleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, lesson_id):
+        lesson = get_object_or_404(Lesson, pk=lesson_id)
+        completion, _ = UserLessonCompletion.objects.get_or_create(
+            user=request.user, lesson=lesson
+        )
+        sync_skill_progress(request.user, lesson.skill, practiced=True)
+        return Response({
+            "lesson_id": lesson.id,
+            "completed": True,
+            "completed_at": completion.completed_at.isoformat(),
+        })
+
+    def delete(self, request, lesson_id):
+        lesson = get_object_or_404(Lesson, pk=lesson_id)
+        UserLessonCompletion.objects.filter(
+            user=request.user, lesson=lesson
+        ).delete()
+        sync_skill_progress(request.user, lesson.skill)
+        return Response(status=status.HTTP_204_NO_CONTENT)

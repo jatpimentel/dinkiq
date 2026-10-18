@@ -1,14 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
+from PIL import Image, ImageOps
 
 # Create your models here.
 class Skill(models.Model):
     name = models.CharField(max_length=100)
-    description = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
     image = models.ImageField(upload_to="skills/", blank=True)
     
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.image:
+            img = Image.open(self.image.path)
+            img = ImageOps.exif_transpose(img)  # fix phone photos that load sideways
+            if max(img.size) > 1200:
+                img.thumbnail((1200, 1200))
+                img.save(self.image.path, quality=85, optimize=True)
 
 class Difficulty(models.Model):
     name = models.CharField(max_length=50)

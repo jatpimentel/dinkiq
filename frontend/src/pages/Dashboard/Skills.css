@@ -1,0 +1,179 @@
+.dash .skills-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 26px;
+}
+
+.dash .skills-head h1 {
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.dash .skills-count {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--green-dark);
+    background: var(--green-soft);
+    padding: 6px 14px;
+    border-radius: 999px;
+}
+
+.dash .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 24px;
+}
+
+.dash .skill-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(18, 28, 21, 0.04), 0 6px 16px rgba(18, 28, 21, 0.05);
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.dash .skill-card:hover {
+    border-color: var(--green-line);
+    transform: translateY(-2px);
+}
+
+.dash .skill-image {
+    position: relative;
+    flex-shrink: 0;
+    height: 170px;
+    overflow: hidden;
+    background: var(--green-soft);
+}
+
+/* The photo is pinned inside the box, so its real size (even a huge,
+   high-resolution one) can never change the layout. It is cropped to fit. */
+.dash .skill-image img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center;
+}
+
+.dash .skill-image-fallback {
+    width: 100%;
+    height: 100%;
+    background: var(--green-soft);
+}
+
+.dash .skill-level,
+.dash .skill-mastered {
+    position: absolute;
+    top: 12px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.dash .skill-level {
+    left: 12px;
+    background: #fff;
+    color: var(--ink);
+}
+
+.dash .skill-mastered {
+    right: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--green);
+    color: #fff;
+}
+
+.dash .skill-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 20px;
+}
+
+.dash .skill-body h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+}
+
+.dash .skill-desc {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+    margin-bottom: 18px;
+    flex: 1;
+}
+
+.dash .skill-progress .bar {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--green-soft);
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.dash .skill-progress .bar span {
+    display: block;
+    height: 100%;
+    background: var(--green);
+    border-radius: 999px;
+    transition: width 0.4s;
+}
+
+.dash .skill-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text);
+}
+
+.dash .skill-stats strong {
+    color: var(--green-dark);
+}
+
+.dash .skill-practiced {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 8px 0 18px;
+}
+
+.dash .skill-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border: 1px solid var(--green);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--green-dark);
+    font-size: 14px;
+    font-weight: 700;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.dash .skill-btn:hover {
+    background: var(--green);
+    color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dash .skill-card,
+    .dash .skill-btn {
+        transition: none;
+    }
+}

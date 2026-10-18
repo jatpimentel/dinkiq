@@ -1,0 +1,246 @@
+/* ---------- lesson popup ---------- */
+.dash .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(18, 28, 21, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: dash-fade 0.18s ease-out;
+}
+
+.dash .modal {
+    position: relative;
+    width: 100%;
+    max-width: 580px;
+    max-height: 88vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 22px;
+    padding: 32px;
+    box-shadow: 0 24px 60px rgba(18, 28, 21, 0.25);
+    animation: dash-pop 0.2s ease-out;
+}
+
+.dash .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.dash .modal-close:hover {
+    background: var(--green-soft);
+    color: var(--green-dark);
+}
+
+.dash .modal-skill {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+    margin-bottom: 6px;
+}
+
+.dash .modal h2 {
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 800;
+    color: var(--ink);
+    padding-right: 44px;
+}
+
+.dash .modal .tags {
+    margin: 14px 0;
+}
+
+.dash .modal-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 22px;
+}
+
+.dash .modal-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 26px;
+}
+
+.dash .modal-stats div {
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.dash .modal-stats strong {
+    display: block;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--green-dark);
+    margin-bottom: 2px;
+}
+
+.dash .modal-stats span {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.dash .modal-subtitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 12px;
+}
+
+.dash .drill-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dash .drill-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+
+.dash .drill-num {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--green-soft);
+    color: var(--green-dark);
+    font-size: 13px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+}
+
+.dash .drill-list li > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.dash .drill-list strong {
+    display: block;
+    font-size: 14px;
+    color: var(--ink);
+}
+
+.dash .drill-list p {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.dash .drill-time {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.dash .drill-time svg {
+    color: var(--green);
+}
+
+.dash .modal-footnote {
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--green-dark);
+}
+
+.dash .modal-actions {
+    margin-top: 24px;
+}
+
+.dash .modal-complete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 20px;
+    border: 1px solid var(--green);
+    border-radius: 12px;
+    background: var(--green);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.dash .modal-complete:hover:not(:disabled) {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+}
+
+.dash .modal-complete.is-done {
+    background: #fff;
+    color: var(--green-dark);
+}
+
+.dash .modal-complete.is-done:hover:not(:disabled) {
+    background: var(--green-soft);
+    border-color: var(--green);
+}
+
+.dash .modal-complete:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.dash .modal-error {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #c0392b;
+}
+
+@keyframes dash-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes dash-pop {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 560px) {
+    .dash .modal {
+        padding: 24px 20px;
+    }
+
+    .dash .modal-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dash .modal-overlay,
+    .dash .modal {
+        animation: none;
+    }
+}

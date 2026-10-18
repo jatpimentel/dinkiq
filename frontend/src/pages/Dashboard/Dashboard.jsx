@@ -1,125 +1,28 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../../services/api"; // adjust the path to where your api.js is
+import Icon from "./Icon";
+import LessonModal from "./LessonModal";
+import Skills from "./Skills";
+import { formatDate, plural } from "./helpers";
 import "./Dashboard.css";
-
-/* ---------- small helpers ---------- */
-
-function Icon({ name, size = 18 }) {
-    const props = {
-        width: size,
-        height: size,
-        viewBox: "0 0 24 24",
-        fill: "none",
-        stroke: "currentColor",
-        strokeWidth: 1.8,
-        strokeLinecap: "round",
-        strokeLinejoin: "round",
-        "aria-hidden": true,
-    };
-
-    switch (name) {
-        case "overview":
-            return (
-                <svg {...props}>
-                    <path d="M3 11l9-8 9 8M5 10v10h14V10" />
-                </svg>
-            );
-        case "skills":
-            return (
-                <svg {...props}>
-                    <path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5" />
-                </svg>
-            );
-        case "lessons":
-            return (
-                <svg {...props}>
-                    <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5zM4 19a2 2 0 0 1 2-2h13" />
-                </svg>
-            );
-        case "drills":
-            return (
-                <svg {...props}>
-                    <circle cx="12" cy="12" r="9" />
-                    <circle cx="12" cy="12" r="4" />
-                </svg>
-            );
-        case "progress":
-            return (
-                <svg {...props}>
-                    <path d="M3 3v18h18M7 15l4-4 3 3 5-6" />
-                </svg>
-            );
-        case "settings":
-            return (
-                <svg {...props}>
-                    <path d="M4 6h8m4 0h4M4 12h2m4 0h10M4 18h10m4 0h2" />
-                    <circle cx="14" cy="6" r="2" />
-                    <circle cx="8" cy="12" r="2" />
-                    <circle cx="16" cy="18" r="2" />
-                </svg>
-            );
-        case "search":
-            return (
-                <svg {...props}>
-                    <circle cx="11" cy="11" r="7" />
-                    <path d="M20 20l-4-4" />
-                </svg>
-            );
-        case "board":
-            return (
-                <svg {...props}>
-                    <rect x="3" y="3" width="7" height="7" rx="1" />
-                    <rect x="14" y="3" width="7" height="7" rx="1" />
-                    <rect x="3" y="14" width="7" height="7" rx="1" />
-                    <rect x="14" y="14" width="7" height="7" rx="1" />
-                </svg>
-            );
-        case "list":
-            return (
-                <svg {...props}>
-                    <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-                </svg>
-            );
-        case "clock":
-            return (
-                <svg {...props}>
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 7v5l3 2" />
-                </svg>
-            );
-        case "check":
-            return (
-                <svg {...props}>
-                    <path d="M5 12l5 5 9-10" />
-                </svg>
-            );
-        case "hash":
-            return (
-                <svg {...props}>
-                    <path d="M5 9h14M5 15h14M10 4L8 20M16 4l-2 16" />
-                </svg>
-            );
-        default:
-            return null;
-    }
-}
-
-const formatDate = (iso) =>
-    iso
-        ? new Date(iso).toLocaleDateString(undefined, {
-              month: "short",
-              day: "numeric",
-          })
-        : null;
-
-const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
 /* ---------- lesson card (board view) ---------- */
 
-function LessonCard({ lesson }) {
+function LessonCard({ lesson, onOpen }) {
     return (
-        <article className={`lesson-card ${lesson.completed ? "is-done" : ""}`}>
+        <article
+            className={`lesson-card ${lesson.completed ? "is-done" : ""}`}
+            role="button"
+            tabIndex={0}
+            onClick={() => onOpen(lesson)}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onOpen(lesson);
+                }
+            }}
+        >
             <div className="lesson-card-top">
                 <h4>{lesson.name}</h4>
                 {lesson.completed && (
@@ -168,12 +71,18 @@ function LessonCard({ lesson }) {
 function Dashboard() {
     const navigate = useNavigate();
 
+    // which page is shown in the middle: ?page=skills, or the overview board
+    const [searchParams, setSearchParams] = useSearchParams();
+    const page = searchParams.get("page") === "skills" ? "skills" : "overview";
+    const goTo = (p) => setSearchParams(p === "overview" ? {} : { page: p });
+
     const [data, setData] = useState(null);
     const [status, setStatus] = useState("loading"); // loading | ready | error | unauth
     const [search, setSearch] = useState("");
     const [tab, setTab] = useState("all"); // all | todo | done
     const [view, setView] = useState("board"); // board | list
     const [activeSkill, setActiveSkill] = useState(null); // null = all skills
+    const [selected, setSelected] = useState(null); // lesson shown in the popup
 
     useEffect(() => {
         api.get("dashboard/")
@@ -186,7 +95,53 @@ function Dashboard() {
             });
     }, []);
 
+    // close the popup with Escape and stop the page behind from scrolling
+    useEffect(() => {
+        if (!selected) return;
+        const onKey = (e) => {
+            if (e.key === "Escape") setSelected(null);
+        };
+        document.addEventListener("keydown", onKey);
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.removeEventListener("keydown", onKey);
+            document.body.style.overflow = prevOverflow;
+        };
+    }, [selected]);
+
+    // mark a lesson completed (or undo it), then reload fresh data from Django
+    const toggleComplete = async (lesson) => {
+        try {
+            if (lesson.completed) {
+                await api.delete(`lessons/${lesson.id}/complete/`);
+            } else {
+                await api.post(`lessons/${lesson.id}/complete/`);
+            }
+
+            const res = await api.get("dashboard/");
+            setData(res.data);
+
+            // keep the popup open, showing the updated lesson
+            const fresh = res.data.skills
+                .flatMap((s) =>
+                    s.lessons.map((l) => ({ ...l, skillName: s.name }))
+                )
+                .find((l) => l.id === lesson.id);
+            setSelected(fresh ?? null);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+
     const skills = data?.skills ?? [];
+
+    // "View lessons" on a skill card: show the board filtered to that skill
+    const openSkill = (id) => {
+        setActiveSkill(id);
+        goTo("overview");
+    };
 
     const counts = useMemo(() => {
         const all = skills.flatMap((s) => s.lessons);
@@ -266,8 +221,8 @@ function Dashboard() {
     const { user, stats, recent } = data;
 
     const navItems = [
-        { key: "overview", label: "Overview", icon: "overview", active: true },
-        { key: "skills", label: "Skills", icon: "skills", count: skills.length },
+        { key: "overview", label: "Overview", icon: "overview", active: page === "overview" },
+        { key: "skills", label: "Skills", icon: "skills", count: skills.length, active: page === "skills" },
         { key: "lessons", label: "Lessons", icon: "lessons", count: stats.total_lessons },
         { key: "drills", label: "Drills", icon: "drills", count: stats.drills_available },
         { key: "progress", label: "Progress", icon: "progress" },
@@ -301,6 +256,14 @@ function Dashboard() {
                         <button
                             key={item.key}
                             className={`side-item ${item.active ? "active" : ""}`}
+                            onClick={() => {
+                                if (item.key === "overview") {
+                                    setActiveSkill(null);
+                                    goTo("overview");
+                                } else if (item.key === "skills") {
+                                    goTo("skills");
+                                }
+                            }}
                         >
                             <Icon name={item.icon} />
                             <span>{item.label}</span>
@@ -316,8 +279,8 @@ function Dashboard() {
                 <p className="side-label">Skills</p>
                 <nav className="side-nav">
                     <button
-                        className={`side-item ${activeSkill === null ? "active" : ""}`}
-                        onClick={() => setActiveSkill(null)}
+                        className={`side-item ${page === "overview" && activeSkill === null ? "active" : ""}`}
+                        onClick={() => openSkill(null)}
                     >
                         <Icon name="hash" />
                         <span>All skills</span>
@@ -325,8 +288,8 @@ function Dashboard() {
                     {skills.map((s) => (
                         <button
                             key={s.id}
-                            className={`side-item ${activeSkill === s.id ? "active" : ""}`}
-                            onClick={() => setActiveSkill(s.id)}
+                            className={`side-item ${page === "overview" && activeSkill === s.id ? "active" : ""}`}
+                            onClick={() => openSkill(s.id)}
                         >
                             <Icon name="hash" />
                             <span>{s.name}</span>
@@ -343,10 +306,10 @@ function Dashboard() {
                         <Icon name="search" size={17} />
                         <input
                             type="text"
-                            placeholder="Search lessons..."
+                            placeholder={page === "skills" ? "Search skills..." : "Search lessons..."}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            aria-label="Search lessons"
+                            aria-label={page === "skills" ? "Search skills" : "Search lessons"}
                         />
                     </label>
 
@@ -358,6 +321,14 @@ function Dashboard() {
                     </div>
                 </header>
 
+                {page === "skills" ? (
+                    <Skills
+                        skills={skills}
+                        search={search}
+                        onOpenSkill={openSkill}
+                    />
+                ) : (
+                <>
                 <section className="dash-heading">
                     <div>
                         <p className="welcome">Hello {user.name}, welcome back!</p>
@@ -439,6 +410,12 @@ function Dashboard() {
                                             <LessonCard
                                                 key={lesson.id}
                                                 lesson={lesson}
+                                                onOpen={(l) =>
+                                                    setSelected({
+                                                        ...l,
+                                                        skillName: col.name,
+                                                    })
+                                                }
                                             />
                                         ))
                                     )}
@@ -461,7 +438,19 @@ function Dashboard() {
                             <p className="empty">No lessons here</p>
                         ) : (
                             flatLessons.map((l) => (
-                                <div className="list-row" key={l.id}>
+                                <div
+                                    className="list-row clickable"
+                                    key={l.id}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => setSelected(l)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter" || e.key === " ") {
+                                            e.preventDefault();
+                                            setSelected(l);
+                                        }
+                                    }}
+                                >
                                     <span className="list-name">{l.name}</span>
                                     <span>{l.skillName}</span>
                                     <span>
@@ -482,6 +471,8 @@ function Dashboard() {
                             ))
                         )}
                     </div>
+                )}
+                </>
                 )}
             </main>
 
@@ -535,6 +526,14 @@ function Dashboard() {
                     )}
                 </section>
             </aside>
+
+            {selected && (
+                <LessonModal
+                    lesson={selected}
+                    onClose={() => setSelected(null)}
+                    onToggleComplete={toggleComplete}
+                />
+            )}
         </div>
     );
 }
