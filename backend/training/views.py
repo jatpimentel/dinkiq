@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.contrib.auth.models import User
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -16,9 +16,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Lesson, Skill, UserLessonCompletion, UserSkillProgress
 from django.utils import timezone
+from rest_framework.permissions import AllowAny
 # Create your views here.
 
 @api_view(['POST'])
+@authentication_classes([])
+@permission_classes([AllowAny])
 def register(request):
     username = request.data.get("username")
     email = request.data.get("email")
@@ -53,6 +56,8 @@ def register(request):
 
 
 @api_view(['GET'])
+@authentication_classes([])
+@permission_classes([AllowAny])
 def skills(request):
     skills = Skill.objects.all()
     serializer = SkillSerializer(skills, many=True)
@@ -177,6 +182,7 @@ def skill_list(request):
 class ContactCreateView(generics.CreateAPIView):
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
+    authentication_classes = []
     permission_classes = [AllowAny]
 
 class DashboardView(APIView):
