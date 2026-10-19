@@ -1,0 +1,220 @@
+.dash .drills-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.dash .drills-head h1 {
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.dash .drills-summary {
+    display: flex;
+    gap: 10px;
+}
+
+.dash .drills-summary span {
+    font-size: 13px;
+    color: var(--green-dark);
+    background: var(--green-soft);
+    padding: 6px 14px;
+    border-radius: 999px;
+}
+
+.dash .drills-summary strong {
+    font-weight: 800;
+}
+
+/* ---------- filters ---------- */
+.dash .drills-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.dash .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dash .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.dash .chip span {
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--muted);
+}
+
+.dash .chip:hover {
+    border-color: var(--green-line);
+}
+
+.dash .chip.active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+.dash .chip.active span {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+.dash .drills-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.dash .drills-sort select {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 9px 12px;
+    cursor: pointer;
+}
+
+.dash .drills-sort select:focus-visible {
+    outline: 3px solid rgba(52, 180, 95, 0.4);
+    outline-offset: 2px;
+}
+
+/* ---------- drill cards ---------- */
+.dash .drills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.dash .drill-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(18, 28, 21, 0.04), 0 4px 12px rgba(18, 28, 21, 0.05);
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.dash .drill-card:hover {
+    border-color: var(--green-line);
+    transform: translateY(-2px);
+}
+
+.dash .drill-card:focus-visible {
+    outline: 3px solid rgba(52, 180, 95, 0.4);
+    outline-offset: 2px;
+}
+
+.dash .drill-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.dash .drill-duration {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--green-soft);
+    color: var(--green-dark);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.dash .drill-done {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    display: grid;
+    place-items: center;
+}
+
+.dash .drill-card h3 {
+    font-size: 17px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 8px;
+}
+
+.dash .drill-desc {
+    flex: 1;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+    margin-bottom: 16px;
+}
+
+.dash .drill-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+}
+
+.dash .drill-skill {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.dash .drill-lesson {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.dash .drill-lesson svg {
+    flex: 0 0 auto;
+    color: var(--green);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dash .drill-card,
+    .dash .chip {
+        transition: none;
+    }
+}

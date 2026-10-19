@@ -4,6 +4,7 @@ import api from "../../services/api"; // adjust the path to where your api.js is
 import Icon from "./Icon";
 import LessonModal from "./LessonModal";
 import Skills from "./Skills";
+import Drills from "./Drills";
 import { formatDate, plural } from "./helpers";
 import "./Dashboard.css";
 
@@ -73,7 +74,9 @@ function Dashboard() {
 
     // which page is shown in the middle: ?page=skills, or the overview board
     const [searchParams, setSearchParams] = useSearchParams();
-    const page = searchParams.get("page") === "skills" ? "skills" : "overview";
+    const pageParam = searchParams.get("page");
+    const page = pageParam === "skills" || pageParam === "drills" ? pageParam : "overview";
+    const searchWord = page === "skills" ? "skills" : page === "drills" ? "drills" : "lessons";
     const goTo = (p) => setSearchParams(p === "overview" ? {} : { page: p });
 
     const [data, setData] = useState(null);
@@ -224,7 +227,7 @@ function Dashboard() {
         { key: "overview", label: "Overview", icon: "overview", active: page === "overview" },
         { key: "skills", label: "Skills", icon: "skills", count: skills.length, active: page === "skills" },
         { key: "lessons", label: "Lessons", icon: "lessons", count: stats.total_lessons },
-        { key: "drills", label: "Drills", icon: "drills", count: stats.drills_available },
+        { key: "drills", label: "Drills", icon: "drills", count: stats.drills_available, active: page === "drills" },
         { key: "progress", label: "Progress", icon: "progress" },
         { key: "settings", label: "Settings", icon: "settings" },
     ];
@@ -262,6 +265,8 @@ function Dashboard() {
                                     goTo("overview");
                                 } else if (item.key === "skills") {
                                     goTo("skills");
+                                } else if (item.key === "drills") {
+                                    goTo("drills");
                                 }
                             }}
                         >
@@ -306,10 +311,10 @@ function Dashboard() {
                         <Icon name="search" size={17} />
                         <input
                             type="text"
-                            placeholder={page === "skills" ? "Search skills..." : "Search lessons..."}
+                            placeholder={`Search ${searchWord}...`}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            aria-label={page === "skills" ? "Search skills" : "Search lessons"}
+                            aria-label={`Search ${searchWord}`}
                         />
                     </label>
 
@@ -326,6 +331,12 @@ function Dashboard() {
                         skills={skills}
                         search={search}
                         onOpenSkill={openSkill}
+                    />
+                ) : page === "drills" ? (
+                    <Drills
+                        skills={skills}
+                        search={search}
+                        onOpenLesson={(lesson) => setSelected(lesson)}
                     />
                 ) : (
                 <>
