@@ -115,7 +115,7 @@ class UserLessonCompletion(models.Model):
         ordering = ['-completed_at']
 
     def __str__(self):
-        return f"{self.user.username} completed {self.lesson.title}"
+        return f"{self.user.username} completed {self.lesson.name}"
 
 # models.py
 class ContactMessage(models.Model):

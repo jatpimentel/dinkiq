@@ -32,7 +32,7 @@ class UserSkillProgressSerializer(serializers.ModelSerializer):
 
 class UserLessonCompletionSerializer(serializers.ModelSerializer):
     lesson_title = serializers.CharField(
-        source='lesson.title',
+        source='lesson.name',
         read_only=True
     )
     skill_name = serializers.CharField(
