@@ -5,6 +5,7 @@ import Icon from "./Icon";
 import LessonModal from "./LessonModal";
 import Skills from "./Skills";
 import Drills from "./Drills";
+import Lessons from "./Lessons";
 import { formatDate, plural } from "./helpers";
 import "./Dashboard.css";
 
@@ -75,7 +76,7 @@ function Dashboard() {
     // which page is shown in the middle: ?page=skills, or the overview board
     const [searchParams, setSearchParams] = useSearchParams();
     const pageParam = searchParams.get("page");
-    const page = pageParam === "skills" || pageParam === "drills" ? pageParam : "overview";
+    const page = ["skills", "drills", "lessons"].includes(pageParam) ? pageParam : "overview";
     const searchWord = page === "skills" ? "skills" : page === "drills" ? "drills" : "lessons";
     const goTo = (p) => setSearchParams(p === "overview" ? {} : { page: p });
 
@@ -226,7 +227,7 @@ function Dashboard() {
     const navItems = [
         { key: "overview", label: "Overview", icon: "overview", active: page === "overview" },
         { key: "skills", label: "Skills", icon: "skills", count: skills.length, active: page === "skills" },
-        { key: "lessons", label: "Lessons", icon: "lessons", count: stats.total_lessons },
+        { key: "lessons", label: "Lessons", icon: "lessons", count: stats.total_lessons, active: page === "lessons" },
         { key: "drills", label: "Drills", icon: "drills", count: stats.drills_available, active: page === "drills" },
         { key: "progress", label: "Progress", icon: "progress" },
         { key: "settings", label: "Settings", icon: "settings" },
@@ -267,6 +268,8 @@ function Dashboard() {
                                     goTo("skills");
                                 } else if (item.key === "drills") {
                                     goTo("drills");
+                                } else if (item.key === "lessons") {
+                                    goTo("lessons");
                                 }
                             }}
                         >
@@ -338,12 +341,18 @@ function Dashboard() {
                         search={search}
                         onOpenLesson={(lesson) => setSelected(lesson)}
                     />
+                ) : page === "lessons" ? (
+                    <Lessons
+                        skills={skills}
+                        search={search}
+                        onOpenLesson={(lesson) => setSelected(lesson)}
+                    />
                 ) : (
                 <>
                 <section className="dash-heading">
                     <div>
                         <p className="welcome">Hello {user.name}, welcome back!</p>
-                        <h1>Lessons</h1>
+                        <h1>Overview</h1>
                     </div>
 
                     <div className="heading-tabs" role="tablist">
