@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Skill,Difficulty, Lesson, Drill, UserSkillProgress, UserLessonCompletion, ContactMessage
-from .serializers import SkillSerializer, DifficultySerializer, LessonSerializer, UserSkillProgressSerializer, UserLessonCompletionSerializer,ContactMessageSerializer
+from .serializers import SkillSerializer, DifficultySerializer, LessonSerializer, UserSkillProgressSerializer, UserLessonCompletionSerializer,ContactMessageSerializer, ProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from rest_framework import generics
@@ -17,6 +17,8 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Lesson, Skill, UserLessonCompletion, UserSkillProgress
 from django.utils import timezone
 from rest_framework.permissions import AllowAny
+from django.contrib.auth import password_validation
+from django.core.exceptions import ValidationError
 # Create your views here.
 
 @api_view(['POST'])
@@ -332,3 +334,37 @@ class LessonCompleteView(APIView):
         ).delete()
         sync_skill_progress(request.user, lesson.skill)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ProfileView(generics.RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        current = request.data.get("current_password", "")
+        new = request.data.get("new_password", "")
+        user = request.user
+
+        if not user.check_password(current):
+            return Response(
+                {"error": "Your current password is incorrect."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            password_validation.validate_password(new, user)
+        except ValidationError as e:
+            return Response(
+                {"error": " ".join(e.messages)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.set_password(new)
+        user.save()
+        return Response({"message": "Your password has been changed."})

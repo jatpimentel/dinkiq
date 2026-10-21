@@ -1,0 +1,21 @@
+/* Register page extras. The rest comes from Login.css (auth-* classes). */
+
+.auth-page .auth-success {
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--green-soft);
+    color: var(--green-dark);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.auth-page .auth-success a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.auth-page .auth-success a:focus-visible {
+    outline: 3px solid rgba(52, 180, 95, 0.4);
+    outline-offset: 2px;
+    border-radius: 4px;
+}

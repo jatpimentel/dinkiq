@@ -87,6 +87,12 @@ function Icon({ name, size = 18 }) {
                     <path d="M5 12l5 5 9-10" />
                 </svg>
             );
+        case "bolt":
+            return (
+                <svg {...props}>
+                    <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
+                </svg>
+            );
         case "chevron":
             return (
                 <svg {...props}>

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Skill,Difficulty,Lesson,Drill,UserSkillProgress,UserLessonCompletion,ContactMessage
+from django.contrib.auth.models import User
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
@@ -61,3 +62,9 @@ class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactMessage
         fields = ["name", "email", "message"]
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "first_name", "last_name", "email"]
+        read_only_fields = ["username"]

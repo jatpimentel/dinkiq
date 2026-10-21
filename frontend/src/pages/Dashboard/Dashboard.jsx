@@ -6,6 +6,8 @@ import LessonModal from "./LessonModal";
 import Skills from "./Skills";
 import Drills from "./Drills";
 import Lessons from "./Lessons";
+import Progress from "./Progress";
+import Settings from "./Settings";
 import { formatDate, plural } from "./helpers";
 import "./Dashboard.css";
 
@@ -76,8 +78,8 @@ function Dashboard() {
     // which page is shown in the middle: ?page=skills, or the overview board
     const [searchParams, setSearchParams] = useSearchParams();
     const pageParam = searchParams.get("page");
-    const page = ["skills", "drills", "lessons"].includes(pageParam) ? pageParam : "overview";
-    const searchWord = page === "skills" ? "skills" : page === "drills" ? "drills" : "lessons";
+    const page = ["skills", "drills", "lessons", "progress", "settings"].includes(pageParam) ? pageParam : "overview";
+    const searchWord = ["skills", "drills", "progress"].includes(page) ? page : "lessons";
     const goTo = (p) => setSearchParams(p === "overview" ? {} : { page: p });
 
     const [data, setData] = useState(null);
@@ -113,6 +115,16 @@ function Dashboard() {
             document.body.style.overflow = prevOverflow;
         };
     }, [selected]);
+
+    // reload the dashboard data (for example after the profile name changes)
+    const reloadDashboard = async () => {
+        try {
+            const res = await api.get("dashboard/");
+            setData(res.data);
+        } catch {
+            /* keep showing the old data */
+        }
+    };
 
     // mark a lesson completed (or undo it), then reload fresh data from Django
     const toggleComplete = async (lesson) => {
@@ -229,8 +241,8 @@ function Dashboard() {
         { key: "skills", label: "Skills", icon: "skills", count: skills.length, active: page === "skills" },
         { key: "lessons", label: "Lessons", icon: "lessons", count: stats.total_lessons, active: page === "lessons" },
         { key: "drills", label: "Drills", icon: "drills", count: stats.drills_available, active: page === "drills" },
-        { key: "progress", label: "Progress", icon: "progress" },
-        { key: "settings", label: "Settings", icon: "settings" },
+        { key: "progress", label: "Progress", icon: "progress", active: page === "progress" },
+        { key: "settings", label: "Settings", icon: "settings", active: page === "settings" },
     ];
 
     /* ---------- render ---------- */
@@ -270,6 +282,10 @@ function Dashboard() {
                                     goTo("drills");
                                 } else if (item.key === "lessons") {
                                     goTo("lessons");
+                                } else if (item.key === "progress") {
+                                    goTo("progress");
+                                } else if (item.key === "settings") {
+                                    goTo("settings");
                                 }
                             }}
                         >
@@ -310,7 +326,10 @@ function Dashboard() {
             {/* MAIN */}
             <main className="dash-main">
                 <header className="dash-topbar">
-                    <label className="search-box">
+{page === "settings" ? (
+                        <div />
+                    ) : (
+                                        <label className="search-box">
                         <Icon name="search" size={17} />
                         <input
                             type="text"
@@ -320,6 +339,7 @@ function Dashboard() {
                             aria-label={`Search ${searchWord}`}
                         />
                     </label>
+                    )}
 
                     <div className="topbar-user">
                         <span className="avatar small">
@@ -340,6 +360,15 @@ function Dashboard() {
                         skills={skills}
                         search={search}
                         onOpenLesson={(lesson) => setSelected(lesson)}
+                    />
+                ) : page === "settings" ? (
+                    <Settings onProfileSaved={reloadDashboard} />
+                ) : page === "progress" ? (
+                    <Progress
+                        skills={skills}
+                        search={search}
+                        onOpenLesson={(lesson) => setSelected(lesson)}
+                        onOpenSkill={openSkill}
                     />
                 ) : page === "lessons" ? (
                     <Lessons
