@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../services/api"; // adjust the path to where your api.js is
 import heroImage from "../../assets/hero-player.jpg";
 import Contact from "./Contact";
+import About from "./About";
 import "./Landing.css";
 
 
@@ -189,7 +190,7 @@ function Landing() {
                     </button>
                 </div>
             </section>
-
+            <About />
             {/* BLOG + CONTACT */}
             <Contact />
         </div>

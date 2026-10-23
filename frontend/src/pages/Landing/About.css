@@ -1,0 +1,269 @@
+.about {
+    --green: #34b45f;
+    --green-dark: #2a9a50;
+    --green-soft: #e8f6ee;
+    --ink: #121c15;
+    --muted: #666b68;
+    --line: #dfe4e1;
+    --container: 1170px;
+
+    max-width: calc(var(--container) + 64px);
+    margin: 0 auto;
+    padding: 0 32px 40px;
+    font-family: "Urbanist", system-ui, sans-serif;
+    color: var(--ink);
+}
+
+.about *,
+.about *::before,
+.about *::after {
+    box-sizing: border-box;
+}
+
+.about :where(h2, h3, h4, p, ol) {
+    margin: 0;
+}
+
+/* ---------- top: photo + copy ---------- */
+.about .about-top {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 72px;
+    align-items: center;
+}
+
+.about .about-visual {
+    position: relative;
+}
+
+/* fixed-size box: the photo is cropped to fit, whatever its real size */
+.about .about-photo {
+    position: relative;
+    height: 520px;
+    border-radius: 32px;
+    overflow: hidden;
+    background: var(--green-soft);
+    box-shadow: 0 24px 48px rgba(18, 28, 21, 0.12);
+}
+
+.about .about-photo img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center;
+}
+
+.about .about-badge {
+    position: absolute;
+    left: -20px;
+    bottom: 36px;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 24px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 16px 36px rgba(18, 28, 21, 0.16);
+}
+
+.about .about-badge strong {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--green);
+}
+
+.about .about-badge span {
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.about .about-kicker {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+    margin-bottom: 14px;
+}
+
+.about .about-copy h2 {
+    font-size: clamp(32px, 3.8vw, 46px);
+    line-height: 1.12;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 24px;
+}
+
+.about .about-copy p:not(.about-kicker) {
+    font-size: 17.5px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 16px;
+    max-width: 560px;
+}
+
+.about .about-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 32px;
+}
+
+/* ---------- blocks ---------- */
+.about .about-block {
+    margin-top: 110px;
+}
+
+.about .about-block-head {
+    text-align: center;
+    margin-bottom: 44px;
+}
+
+.about .about-block-head h3 {
+    font-size: clamp(28px, 3.2vw, 38px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+/* values */
+.about .about-values {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+}
+
+.about .about-value {
+    padding: 32px 28px;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: #fff;
+    transition: border-color 0.25s, transform 0.25s;
+}
+
+.about .about-value:hover {
+    border-color: #b5d9c3;
+    transform: translateY(-3px);
+}
+
+.about .about-value-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--green-soft);
+    color: var(--green-dark);
+    margin-bottom: 22px;
+}
+
+.about .about-value h4 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.about .about-value p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+/* steps */
+.about .about-steps {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+}
+
+.about .about-steps li {
+    position: relative;
+    text-align: center;
+    padding: 0 12px;
+}
+
+/* line connecting the numbered circles */
+.about .about-steps li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 28px;
+    left: calc(50% + 40px);
+    right: calc(-50% + 40px);
+    border-top: 2px dashed #b5d9c3;
+}
+
+.about .about-step-num {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.about .about-steps h4 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.about .about-steps p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1000px) {
+    .about .about-top {
+        grid-template-columns: 1fr;
+        gap: 48px;
+    }
+
+    .about .about-photo {
+        height: 400px;
+    }
+
+    .about .about-badge {
+        left: 16px;
+    }
+
+    .about .about-block {
+        margin-top: 80px;
+    }
+
+    .about .about-values,
+    .about .about-steps {
+        grid-template-columns: 1fr;
+    }
+
+    .about .about-steps li:not(:last-child)::after {
+        display: none;
+    }
+}
+
+@media (max-width: 700px) {
+    .about .about-photo {
+        height: 300px;
+        border-radius: 24px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .about .about-value {
+        transition: none;
+    }
+}
