@@ -1,0 +1,26 @@
+/* A layer behind the whole landing page. It is clipped to the page,
+   so balls that stick out past the edges never cause sideways scrolling. */
+.pb-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    color: #34b45f;
+}
+
+.pb-layer .pb {
+    position: absolute;
+    display: block;
+    width: var(--size);
+    height: var(--size);
+    transform: rotate(var(--rot));
+}
+
+@media (max-width: 700px) {
+    /* smaller balls on phones so they don't crowd the text */
+    .pb-layer .pb {
+        width: calc(var(--size) * 0.55);
+        height: calc(var(--size) * 0.55);
+    }
+}

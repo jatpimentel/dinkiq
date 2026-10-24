@@ -4,14 +4,24 @@ import api from "../../services/api"; // adjust the path to where your api.js is
 import heroImage from "../../assets/hero-player.jpg";
 import Contact from "./Contact";
 import About from "./About";
+import Pickleballs from "./Pickleballs";
 import "./Landing.css";
 
+// navbar links: the id must match the id of the section it scrolls to
+const NAV_LINKS = [
+    { id: "home", label: "Home" },
+    { id: "about", label: "About us" },
+    { id: "services", label: "Service" },
+    { id: "contact", label: "Contact" },
+];
 
 function Landing() {
     const navigate = useNavigate();
     const carouselRef = useRef(null);
     const [skills, setSkills] = useState([]);
     const [status, setStatus] = useState("loading"); // loading | ready | error
+    const [scrolled, setScrolled] = useState(false); // adds a shadow to the navbar
+    const [activeSection, setActiveSection] = useState("home"); // highlighted link
 
     useEffect(() => {
         api.get("skills/")
@@ -22,6 +32,32 @@ function Landing() {
                 setStatus("ready");
             })
             .catch(() => setStatus("error"));
+    }, []);
+
+    // navbar shadow once the page has scrolled
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 8);
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
+    // highlight the navbar link of the section that is on screen
+    useEffect(() => {
+        const sections = NAV_LINKS.map((l) => document.getElementById(l.id)).filter(Boolean);
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) setActiveSection(entry.target.id);
+                });
+            },
+            // only the band around the middle of the screen counts
+            { rootMargin: "-40% 0px -55% 0px" }
+        );
+
+        sections.forEach((s) => observer.observe(s));
+        return () => observer.disconnect();
     }, []);
 
     const scrollNext = () => {
@@ -40,8 +76,11 @@ function Landing() {
 
     return (
         <div className="landing">
-            {/* NAVBAR */}
-            <header className="navbar">
+            {/* faded pickleballs in the background */}
+            <Pickleballs />
+
+            {/* NAVBAR (stays visible while scrolling) */}
+            <header className={`navbar ${scrolled ? "is-scrolled" : ""}`}>
                 <div className="navbar-inner">
                     <a href="#home" className="brand">
                         <span className="brand-name">DinkIQ</span>
@@ -49,10 +88,16 @@ function Landing() {
                     </a>
 
                     <nav className="nav-links">
-                        <a href="#home" className="active">Home</a>
-                        <a href="#about">About us</a>
-                        <a href="#services">Service</a>
-                        <a href="#contact">Contact</a>
+                        {NAV_LINKS.map((link) => (
+                            <a
+                                key={link.id}
+                                href={`#${link.id}`}
+                                className={activeSection === link.id ? "active" : ""}
+                                aria-current={activeSection === link.id ? "true" : undefined}
+                            >
+                                {link.label}
+                            </a>
+                        ))}
                     </nav>
 
                     <button
@@ -190,7 +235,10 @@ function Landing() {
                     </button>
                 </div>
             </section>
-            <About />
+
+            {/* ABOUT */}
+            <About skillCount={skills.length} />
+
             {/* BLOG + CONTACT */}
             <Contact />
         </div>

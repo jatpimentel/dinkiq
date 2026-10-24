@@ -13,6 +13,20 @@
     color: var(--text);
     background: #fff;
     min-height: 100vh;
+    position: relative; /* the pickleball layer is positioned against the page */
+}
+
+/* page content sits above the faded pickleballs */
+.landing > section,
+.landing > .about,
+.landing > .contact-page {
+    position: relative;
+    z-index: 1;
+}
+
+/* let the pickleballs show through the contact section */
+.landing .contact-page {
+    background: transparent;
 }
 
 .landing *,
@@ -84,7 +98,21 @@
 
 /* ---------- Navbar ---------- */
 .landing .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     padding: 24px 32px;
+    background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: padding 0.25s, box-shadow 0.25s;
+}
+
+/* a little smaller, with a soft shadow, once the page has scrolled */
+.landing .navbar.is-scrolled {
+    padding-top: 14px;
+    padding-bottom: 14px;
+    box-shadow: 0 6px 24px rgba(18, 28, 21, 0.08);
 }
 
 .landing .navbar-inner {
@@ -130,10 +158,6 @@
 .landing .nav-links a:hover,
 .landing .nav-links a.active {
     color: var(--green);
-}
-
-.landing .nav-links a.active {
-    margin-right: 10px;
 }
 
 .landing .btn-login {
@@ -423,4 +447,12 @@
 /* Smooth scrolling for the navbar links (Home, Service, Contact) */
 html {
     scroll-behavior: smooth;
+    /* keeps section titles from hiding behind the sticky navbar */
+    scroll-padding-top: 90px;
+}
+
+@media (max-width: 700px) {
+    html {
+        scroll-padding-top: 130px;
+    }
 }
