@@ -3,56 +3,79 @@ import Icon from "./Icon";
 import { plural } from "./helpers";
 import "./Drills.css";
 
-/* The "Drills" page: shown in the middle of the dashboard.
+/* The "Drills" page, organized as: Skill -> Lesson -> numbered drills.
    Rendered inside the .dash wrapper (it uses its colors). */
 
 function Drills({ skills, search, onOpenLesson }) {
     const [skillFilter, setSkillFilter] = useState(null); // null = all skills
-    const [sort, setSort] = useState("default"); // default | shortest | longest | name
+    const [collapsed, setCollapsed] = useState(() => new Set());
 
-    // every drill, with the lesson and skill it belongs to
-    const allDrills = useMemo(
+    const q = search.trim().toLowerCase();
+
+    const totalDrills = useMemo(
         () =>
-            skills.flatMap((skill) =>
-                skill.lessons.flatMap((lesson) =>
-                    lesson.drills.map((drill) => ({
-                        ...drill,
-                        skill: { id: skill.id, name: skill.name },
-                        lesson: { ...lesson, skillName: skill.name },
-                    }))
-                )
+            skills.reduce(
+                (sum, s) => sum + s.lessons.reduce((n, l) => n + l.drills.length, 0),
+                0
             ),
         [skills]
     );
 
-    const visible = useMemo(() => {
-        const q = search.trim().toLowerCase();
+    // skills -> lessons -> drills, after the skill filter and the search
+    const groups = useMemo(() => {
+        const has = (...parts) =>
+            parts.some((p) => (p || "").toLowerCase().includes(q));
 
-        const list = allDrills.filter((d) => {
-            if (skillFilter !== null && d.skill.id !== skillFilter) return false;
-            if (!q) return true;
-            return (
-                d.name.toLowerCase().includes(q) ||
-                (d.description || "").toLowerCase().includes(q) ||
-                d.lesson.name.toLowerCase().includes(q) ||
-                d.skill.name.toLowerCase().includes(q)
-            );
+        return skills
+            .filter((s) => skillFilter === null || s.id === skillFilter)
+            .map((skill) => {
+                const lessons = skill.lessons
+                    .map((lesson) => {
+                        // a search that matches the lesson or skill name keeps all its drills
+                        const lessonMatch =
+                            !q || has(lesson.name, skill.name, lesson.difficulty.name);
+
+                        const shown = lesson.drills
+                            .map((d, i) => ({ ...d, n: i + 1 }))
+                            .filter((d) => lessonMatch || has(d.name, d.description));
+
+                        return {
+                            ...lesson,
+                            skillName: skill.name,
+                            shown,
+                            minutes: shown.reduce((sum, d) => sum + d.duration_minutes, 0),
+                        };
+                    })
+                    .filter((l) => !q || l.shown.length > 0);
+
+                return {
+                    ...skill,
+                    lessons,
+                    drillCount: lessons.reduce((n, l) => n + l.shown.length, 0),
+                    minutes: lessons.reduce((n, l) => n + l.minutes, 0),
+                };
+            })
+            .filter((g) => !q || g.lessons.length > 0);
+    }, [skills, skillFilter, q]);
+
+    const visibleDrills = groups.reduce((n, g) => n + g.drillCount, 0);
+    const visibleMinutes = groups.reduce((n, g) => n + g.minutes, 0);
+
+    const allCollapsed = groups.length > 0 && groups.every((g) => collapsed.has(g.id));
+
+    const toggleGroup = (id) =>
+        setCollapsed((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
         });
 
-        if (sort === "shortest") {
-            list.sort((a, b) => a.duration_minutes - b.duration_minutes);
-        } else if (sort === "longest") {
-            list.sort((a, b) => b.duration_minutes - a.duration_minutes);
-        } else if (sort === "name") {
-            list.sort((a, b) => a.name.localeCompare(b.name));
-        }
-        return list;
-    }, [allDrills, search, skillFilter, sort]);
+    const toggleAll = () =>
+        setCollapsed(allCollapsed ? new Set() : new Set(groups.map((g) => g.id)));
 
-    const totalMinutes = visible.reduce((sum, d) => sum + d.duration_minutes, 0);
-
-    const countFor = (skillId) =>
-        allDrills.filter((d) => d.skill.id === skillId).length;
+    const drillsIn = (skill) =>
+        skill.lessons.reduce((n, l) => n + l.drills.length, 0);
 
     return (
         <section className="drills-page">
@@ -64,10 +87,10 @@ function Drills({ skills, search, onOpenLesson }) {
 
                 <div className="drills-summary">
                     <span>
-                        <strong>{visible.length}</strong> {visible.length === 1 ? "drill" : "drills"}
+                        <strong>{visibleDrills}</strong> {visibleDrills === 1 ? "drill" : "drills"}
                     </span>
                     <span>
-                        <strong>{totalMinutes}</strong> min total
+                        <strong>{visibleMinutes}</strong> min total
                     </span>
                 </div>
             </div>
@@ -78,7 +101,7 @@ function Drills({ skills, search, onOpenLesson }) {
                         className={`chip ${skillFilter === null ? "active" : ""}`}
                         onClick={() => setSkillFilter(null)}
                     >
-                        All <span>{allDrills.length}</span>
+                        All <span>{totalDrills}</span>
                     </button>
                     {skills.map((s) => (
                         <button
@@ -86,72 +109,107 @@ function Drills({ skills, search, onOpenLesson }) {
                             className={`chip ${skillFilter === s.id ? "active" : ""}`}
                             onClick={() => setSkillFilter(s.id)}
                         >
-                            {s.name} <span>{countFor(s.id)}</span>
+                            {s.name} <span>{drillsIn(s)}</span>
                         </button>
                     ))}
                 </div>
 
-                <label className="drills-sort">
-                    Sort by
-                    <select value={sort} onChange={(e) => setSort(e.target.value)}>
-                        <option value="default">Skill order</option>
-                        <option value="shortest">Shortest first</option>
-                        <option value="longest">Longest first</option>
-                        <option value="name">Name (A-Z)</option>
-                    </select>
-                </label>
+                {groups.length > 1 && (
+                    <button className="dr-toggle-all" onClick={toggleAll}>
+                        {allCollapsed ? "Expand all" : "Collapse all"}
+                    </button>
+                )}
             </div>
 
-            {allDrills.length === 0 ? (
+            {totalDrills === 0 ? (
                 <p className="dash-message">No drills have been added yet.</p>
-            ) : visible.length === 0 ? (
+            ) : groups.length === 0 ? (
                 <p className="dash-message">No drills match your search.</p>
             ) : (
-                <div className="drills-grid">
-                    {visible.map((d) => (
-                        <article
-                            className="drill-card"
-                            key={d.id}
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => onOpenLesson(d.lesson)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") {
-                                    e.preventDefault();
-                                    onOpenLesson(d.lesson);
-                                }
-                            }}
-                        >
-                            <div className="drill-top">
-                                <span className="drill-duration">
-                                    <Icon name="clock" size={14} />
-                                    {d.duration_minutes} min
-                                </span>
-                                {d.lesson.completed && (
-                                    <span className="drill-done" title="Lesson completed">
-                                        <Icon name="check" size={13} />
+                <div className="dr-list">
+                    {groups.map((g) => {
+                        const isCollapsed = collapsed.has(g.id);
+
+                        return (
+                            <section className="dr-skill" key={g.id}>
+                                <button
+                                    className="dr-skill-head"
+                                    onClick={() => toggleGroup(g.id)}
+                                    aria-expanded={!isCollapsed}
+                                >
+                                    <span className={`dr-chevron ${isCollapsed ? "closed" : ""}`}>
+                                        <Icon name="chevron" size={16} />
                                     </span>
+                                    <h2>{g.name}</h2>
+                                    <span className="dr-skill-meta">
+                                        {plural(g.lessons.length, "lesson")} ·{" "}
+                                        {plural(g.drillCount, "drill")} · {g.minutes} min
+                                    </span>
+                                </button>
+
+                                {!isCollapsed && (
+                                    <div className="dr-skill-body">
+                                        {g.lessons.length === 0 ? (
+                                            <p className="dr-none">
+                                                No lessons in this skill yet.
+                                            </p>
+                                        ) : (
+                                            g.lessons.map((l) => (
+                                                <article className="dr-lesson" key={l.id}>
+                                                    <header className="dr-lesson-head">
+                                                        <div className="dr-lesson-title">
+                                                            <button
+                                                                className="dr-lesson-link"
+                                                                onClick={() => onOpenLesson(l)}
+                                                                title="Open this lesson"
+                                                            >
+                                                                {l.name}
+                                                                <Icon name="arrow" size={14} />
+                                                            </button>
+                                                            <i className={`tag tag-${l.difficulty.id % 3}`}>
+                                                                {l.difficulty.name}
+                                                            </i>
+                                                            <i
+                                                                className={`tag ${l.completed ? "tag-done" : "tag-todo"}`}
+                                                            >
+                                                                {l.completed ? "Done" : "To Do"}
+                                                            </i>
+                                                        </div>
+
+                                                        <span className="dr-lesson-time">
+                                                            <Icon name="clock" size={14} />
+                                                            {l.minutes} min
+                                                        </span>
+                                                    </header>
+
+                                                    {l.shown.length === 0 ? (
+                                                        <p className="dr-none">
+                                                            No drills in this lesson yet.
+                                                        </p>
+                                                    ) : (
+                                                        <ol className="dr-drills">
+                                                            {l.shown.map((d) => (
+                                                                <li key={d.id}>
+                                                                    <span className="dr-num">{d.n}</span>
+                                                                    <div>
+                                                                        <strong>{d.name}</strong>
+                                                                        {d.description && <p>{d.description}</p>}
+                                                                    </div>
+                                                                    <span className="dr-time">
+                                                                        {d.duration_minutes} min
+                                                                    </span>
+                                                                </li>
+                                                            ))}
+                                                        </ol>
+                                                    )}
+                                                </article>
+                                            ))
+                                        )}
+                                    </div>
                                 )}
-                            </div>
-
-                            <h3>{d.name}</h3>
-                            <p className="drill-desc">
-                                {d.description || "No description has been added yet."}
-                            </p>
-
-                            <div className="drill-foot">
-                                <span className="drill-skill">{d.skill.name}</span>
-                                <span className={`tag tag-${d.lesson.difficulty.id % 3}`}>
-                                    {d.lesson.difficulty.name}
-                                </span>
-                            </div>
-
-                            <p className="drill-lesson">
-                                <Icon name="lessons" size={14} />
-                                {d.lesson.name}
-                            </p>
-                        </article>
-                    ))}
+                            </section>
+                        );
+                    })}
                 </div>
             )}
         </section>

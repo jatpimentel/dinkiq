@@ -1,23 +1,23 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api"; // adjust the path to where your api.js is
 import heroImage from "../../assets/hero-player.jpg";
 import Contact from "./Contact";
 import About from "./About";
 import Pickleballs from "./Pickleballs";
+import SkillsCarousel from "./Skillscarousel";
 import "./Landing.css";
 
 // navbar links: the id must match the id of the section it scrolls to
 const NAV_LINKS = [
     { id: "home", label: "Home" },
-    { id: "about", label: "About us" },
     { id: "services", label: "Service" },
+    { id: "about", label: "About us" },
     { id: "contact", label: "Contact" },
 ];
 
 function Landing() {
     const navigate = useNavigate();
-    const carouselRef = useRef(null);
     const [skills, setSkills] = useState([]);
     const [status, setStatus] = useState("loading"); // loading | ready | error
     const [scrolled, setScrolled] = useState(false); // adds a shadow to the navbar
@@ -59,14 +59,6 @@ function Landing() {
         sections.forEach((s) => observer.observe(s));
         return () => observer.disconnect();
     }, []);
-
-    const scrollNext = () => {
-        const el = carouselRef.current;
-        if (!el) return;
-        const card = el.querySelector(".lesson-card");
-        const step = card ? card.offsetWidth + 30 : 400;
-        el.scrollBy({ left: step, behavior: "smooth" });
-    };
 
     const scrollToServices = () => {
         document
@@ -163,77 +155,11 @@ function Landing() {
 
                 <div className="lessons-divider" />
 
-                <div className="carousel-wrapper">
-                    <div className="lessons-grid" ref={carouselRef}>
-                        {status === "loading" && (
-                            <p className="lessons-message">Loading lessons...</p>
-                        )}
-                        {status === "error" && (
-                            <p className="lessons-message">
-                                Lessons could not be loaded. Please try again
-                                later.
-                            </p>
-                        )}
-                        {status === "ready" && skills.length === 0 && (
-                            <p className="lessons-message">
-                                No lessons available yet.
-                            </p>
-                        )}
-
-                        {skills.map((skill) => (
-                            <article className="lesson-card" key={skill.id}>
-                                <div className="lesson-image">
-                                    {skill.image ? (
-                                        <img src={skill.image} alt={skill.name} />
-                                    ) : (
-                                        <div className="lesson-image-fallback" />
-                                    )}
-                                </div>
-
-                                <h3>{skill.name}</h3>
-                                <p>{skill.description}</p>
-
-                                <button
-                                    className="btn btn-book"
-                                    onClick={() => navigate("/login")}
-                                >
-                                    Book Now
-                                    <svg
-                                        width="16"
-                                        height="16"
-                                        viewBox="0 0 16 16"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="1.4"
-                                        aria-hidden="true"
-                                    >
-                                        <path d="M4 12L12 4M5 4h7v7" />
-                                    </svg>
-                                </button>
-                            </article>
-                        ))}
-                    </div>
-
-                    <button
-                        className="carousel-next"
-                        onClick={scrollNext}
-                        aria-label="Show next lessons"
-                    >
-                        <svg
-                            width="22"
-                            height="22"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            aria-hidden="true"
-                        >
-                            <path d="M4 12h16M14 6l6 6-6 6" />
-                        </svg>
-                    </button>
-                </div>
+                <SkillsCarousel
+                    skills={skills}
+                    status={status}
+                    onBook={() => navigate("/login")}
+                />
             </section>
 
             {/* ABOUT */}

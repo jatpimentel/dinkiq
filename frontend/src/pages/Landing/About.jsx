@@ -1,11 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import coachImage from "../../assets/coach.jpg";
 import "./About.css";
 
 /* About us section. It is rendered inside the .landing page,
    so the navbar link "About us" (#about) scrolls straight to it. */
-
-// Replace this photo with your own: public/images/about.jpg
-const ABOUT_IMAGE = "/images/about.jpg";
 
 const values = [
     {
@@ -83,11 +81,10 @@ function About({ skillCount = 0 }) {
                 <div className="about-visual">
                     <div className="about-photo">
                         <img
-                            src={ABOUT_IMAGE}
-                            alt="Players practicing pickleball on the court"
+                            src={coachImage}
+                            alt="Our pickleball coach on the court"
                             loading="lazy"
                             decoding="async"
-                            onError={(e) => (e.currentTarget.style.display = "none")}
                         />
                     </div>
 

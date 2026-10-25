@@ -44,7 +44,7 @@ class Lesson(models.Model):
 
 class Drill(models.Model):
     name = models.CharField(max_length=100)
-    description = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
     lesson = models.ForeignKey(
         Lesson,
         on_delete=models.CASCADE,

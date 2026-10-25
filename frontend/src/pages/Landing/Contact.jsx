@@ -57,55 +57,7 @@ function Contact() {
 
     return (
         <div className="contact-page">
-            {/* BLOG */}
-            <section className="blog" id="blog">
-                <div className="blog-header">
-                    <h2>Stay Updated with Our Tips &amp; Court News!</h2>
-
-                    <div className="blog-intro">
-                        <h3>Our Blog</h3>
-                        <p>
-                            Stay informed with our latest pickleball tips,
-                            lesson updates, and expert advice on improving your
-                            game.
-                        </p>
-                    </div>
-                </div>
-
-                <div className="section-divider" />
-
-                <div className="blog-grid">
-                    {posts.map((post) => (
-                        <article className="blog-card" key={post.id}>
-                            <div className="blog-image">
-                                <img
-                                    src={post.image}
-                                    alt={post.title}
-                                    onError={(e) =>
-                                        (e.currentTarget.style.display = "none")
-                                    }
-                                />
-                            </div>
-
-                            <div className="blog-body">
-                                <p className="blog-meta">
-                                    <span>{post.author}</span>
-                                    <span>{post.date}</span>
-                                </p>
-                                <h3>{post.title}</h3>
-                                <p className="blog-excerpt">{post.excerpt}</p>
-
-                                <div className="blog-footer">
-                                    <button className="read-more">
-                                        Read More
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
-                    ))}
-                </div>
-            </section>
-
+            
             {/* CONTACT */}
             <section className="contact" id="contact">
                 <div className="find-us">

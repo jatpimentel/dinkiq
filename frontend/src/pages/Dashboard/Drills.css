@@ -83,138 +83,246 @@
     color: #fff;
 }
 
-.dash .drills-sort {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--muted);
-}
-
-.dash .drills-sort select {
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink);
-    background: #fff;
+.dash .dr-toggle-all {
+    padding: 8px 14px;
     border: 1px solid var(--line);
     border-radius: 10px;
-    padding: 9px 12px;
-    cursor: pointer;
+    background: #fff;
+    color: var(--green-dark);
+    font-size: 13px;
+    font-weight: 700;
 }
 
-.dash .drills-sort select:focus-visible {
-    outline: 3px solid rgba(52, 180, 95, 0.4);
-    outline-offset: 2px;
+.dash .dr-toggle-all:hover {
+    background: var(--green-soft);
+    border-color: var(--green-line);
 }
 
-/* ---------- drill cards ---------- */
-.dash .drills-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-}
-
-.dash .drill-card {
+/* ---------- skill sections ---------- */
+.dash .dr-list {
     display: flex;
     flex-direction: column;
+    gap: 22px;
+}
+
+.dash .dr-skill {
     background: #fff;
-    border: 1px solid transparent;
-    border-radius: 16px;
-    padding: 20px;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(18, 28, 21, 0.04), 0 4px 12px rgba(18, 28, 21, 0.05);
-    transition: border-color 0.2s, transform 0.2s;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
 }
 
-.dash .drill-card:hover {
-    border-color: var(--green-line);
-    transform: translateY(-2px);
+.dash .dr-skill-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 16px 22px;
+    border: none;
+    background: var(--green-soft);
+    text-align: left;
 }
 
-.dash .drill-card:focus-visible {
+.dash .dr-skill-head:hover {
+    background: #dff1e6;
+}
+
+.dash .dr-skill-head:focus-visible,
+.dash .dr-lesson-link:focus-visible,
+.dash .dr-toggle-all:focus-visible,
+.dash .chip:focus-visible {
     outline: 3px solid rgba(52, 180, 95, 0.4);
     outline-offset: 2px;
 }
 
-.dash .drill-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-}
-
-.dash .drill-duration {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: var(--green-soft);
-    color: var(--green-dark);
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.dash .drill-done {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--green);
-    color: #fff;
+.dash .dr-chevron {
     display: grid;
     place-items: center;
+    width: 24px;
+    height: 24px;
+    color: var(--green-dark);
+    transition: transform 0.2s;
 }
 
-.dash .drill-card h3 {
-    font-size: 17px;
-    line-height: 1.3;
-    font-weight: 700;
+.dash .dr-chevron.closed {
+    transform: rotate(-90deg);
+}
+
+.dash .dr-skill-head h2 {
+    font-size: 19px;
+    font-weight: 800;
     color: var(--ink);
-    margin-bottom: 8px;
 }
 
-.dash .drill-desc {
-    flex: 1;
-    font-size: 13.5px;
-    line-height: 1.55;
-    color: var(--muted);
-    margin-bottom: 16px;
+.dash .dr-skill-meta {
+    margin-left: auto;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--green-dark);
+    text-align: right;
 }
 
-.dash .drill-foot {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding-top: 14px;
+.dash .dr-skill-body {
+    padding: 4px 22px 10px;
+}
+
+/* ---------- lessons inside a skill ---------- */
+.dash .dr-lesson {
+    padding: 20px 0;
     border-top: 1px solid var(--line);
 }
 
-.dash .drill-skill {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--ink);
+.dash .dr-lesson:first-child {
+    border-top: none;
 }
 
-.dash .drill-lesson {
+.dash .dr-lesson-head {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin-bottom: 14px;
+}
+
+.dash .dr-lesson-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+}
+
+.dash .dr-lesson-link {
+    display: inline-flex;
+    align-items: center;
     gap: 6px;
-    margin-top: 10px;
-    font-size: 12px;
+    padding: 2px 0;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.dash .dr-lesson-link svg {
+    color: var(--green);
+    transition: transform 0.15s;
+}
+
+.dash .dr-lesson-link:hover {
+    color: var(--green-dark);
+}
+
+.dash .dr-lesson-link:hover svg {
+    transform: translateX(3px);
+}
+
+.dash .dr-lesson-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
     color: var(--muted);
 }
 
-.dash .drill-lesson svg {
-    flex: 0 0 auto;
+.dash .dr-lesson-time svg {
     color: var(--green);
 }
 
+/* ---------- numbered drills ---------- */
+.dash .dr-drills {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dash .dr-drills li {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--bg);
+}
+
+.dash .dr-num {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid var(--green-line);
+    color: var(--green-dark);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.dash .dr-drills strong {
+    display: block;
+    font-size: 14.5px;
+    color: var(--ink);
+}
+
+.dash .dr-drills p {
+    margin-top: 2px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+}
+
+.dash .dr-time {
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--green-dark);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.dash .dr-none {
+    padding: 10px 2px;
+    font-size: 13.5px;
+    color: var(--muted);
+}
+
+@media (max-width: 640px) {
+    .dash .dr-skill-head {
+        flex-wrap: wrap;
+        padding: 14px 16px;
+    }
+
+    .dash .dr-skill-meta {
+        width: 100%;
+        margin-left: 36px;
+        text-align: left;
+    }
+
+    .dash .dr-skill-body {
+        padding: 4px 16px 10px;
+    }
+
+    .dash .dr-drills li {
+        grid-template-columns: 30px minmax(0, 1fr);
+    }
+
+    .dash .dr-time {
+        grid-column: 2;
+        justify-self: start;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .dash .drill-card,
-    .dash .chip {
+    .dash .chip,
+    .dash .dr-chevron,
+    .dash .dr-lesson-link svg {
         transition: none;
     }
 }
