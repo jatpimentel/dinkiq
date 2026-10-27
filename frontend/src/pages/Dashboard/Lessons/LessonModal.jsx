@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import Icon from "./Icon";
-import { formatDate, formatLongDate } from "./helpers";
+import Icon from "../Icon";
+import DrillTimer from "../Drills/DrillTimer";
+import { formatDate, formatLongDate } from "../helpers";
 import "./LessonModal.css";
 
 /* Popup with the full details of one lesson.
@@ -10,6 +11,7 @@ function LessonModal({ lesson, onClose, onToggleComplete }) {
     const closeRef = useRef(null);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
+    const [timerDrill, setTimerDrill] = useState(null); // drill shown in the timer popup
 
     const handleToggle = async () => {
         setSaving(true);
@@ -24,6 +26,7 @@ function LessonModal({ lesson, onClose, onToggleComplete }) {
     }, []);
 
     return (
+        <>
         <div className="modal-overlay" onClick={onClose}>
             <div
                 className="modal"
@@ -92,6 +95,14 @@ function LessonModal({ lesson, onClose, onToggleComplete }) {
                                     <Icon name="clock" size={13} />
                                     {d.duration_minutes} min
                                 </span>
+                                <button
+                                    className="drill-start"
+                                    onClick={() => setTimerDrill(d)}
+                                    aria-label={`Start the timer for ${d.name}`}
+                                >
+                                    <Icon name="play" size={12} />
+                                    Start
+                                </button>
                             </li>
                         ))}
                     </ol>
@@ -128,6 +139,16 @@ function LessonModal({ lesson, onClose, onToggleComplete }) {
                 </div>
             </div>
         </div>
+
+        {timerDrill && (
+            <DrillTimer
+                drill={timerDrill}
+                lessonName={lesson.name}
+                skillName={lesson.skillName}
+                onClose={() => setTimerDrill(null)}
+            />
+        )}
+        </>
     );
 }
 

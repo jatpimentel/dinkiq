@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import Icon from "./Icon";
-import { formatDate, plural } from "./helpers";
+import Icon from "../Icon";
+import { formatDate, plural } from "../helpers";
 import "./Lessons.css";
 
 /* The "Lessons" page: every lesson, organized by skill, in clean rows.

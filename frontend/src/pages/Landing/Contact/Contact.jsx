@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../../services/api"; // adjust the path to where your api.js is
+import api from "../../../services/api"; // adjust the path to where your api.js is
 import "./Contact.css";
 
 // Placeholder articles. Put your photos in /public/images (or change the paths)

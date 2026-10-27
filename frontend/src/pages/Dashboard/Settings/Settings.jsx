@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api"; // adjust the path to where your api.js is
+import api from "../../../services/api"; // adjust the path to where your api.js is
 import "./Settings.css";
 
 /* The "Settings" page: profile, password and log out.

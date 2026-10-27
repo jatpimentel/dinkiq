@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
-import Icon from "./Icon";
-import { formatDate, plural } from "./helpers";
-import "./LessonModal.css";
-import "./SkillModal.css";
+import Icon from "../Icon";
+import { formatDate, plural } from "../helpers";
+import "../Lessons/LessonModal";
+import "../Skills/SkillModal.css";
 
 /* Popup with the full details of one skill.
    Render it inside the .dash wrapper (it uses its colors). */

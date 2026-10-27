@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import Icon from "./Icon";
-import { plural } from "./helpers";
+import Icon from "../Icon";
+import DrillTimer from "./DrillTimer";
+import { plural } from "../helpers";
 import "./Drills.css";
 
 /* The "Drills" page, organized as: Skill -> Lesson -> numbered drills.
@@ -9,6 +10,7 @@ import "./Drills.css";
 function Drills({ skills, search, onOpenLesson }) {
     const [skillFilter, setSkillFilter] = useState(null); // null = all skills
     const [collapsed, setCollapsed] = useState(() => new Set());
+    const [timer, setTimer] = useState(null); // drill shown in the timer popup
 
     const q = search.trim().toLowerCase();
 
@@ -195,9 +197,25 @@ function Drills({ skills, search, onOpenLesson }) {
                                                                         <strong>{d.name}</strong>
                                                                         {d.description && <p>{d.description}</p>}
                                                                     </div>
-                                                                    <span className="dr-time">
-                                                                        {d.duration_minutes} min
-                                                                    </span>
+                                                                    <div className="dr-actions">
+                                                                        <span className="dr-time">
+                                                                            {d.duration_minutes} min
+                                                                        </span>
+                                                                        <button
+                                                                            className="dr-start"
+                                                                            onClick={() =>
+                                                                                setTimer({
+                                                                                    drill: d,
+                                                                                    lessonName: l.name,
+                                                                                    skillName: g.name,
+                                                                                })
+                                                                            }
+                                                                            aria-label={`Start the timer for ${d.name}`}
+                                                                        >
+                                                                            <Icon name="play" size={12} />
+                                                                            Start
+                                                                        </button>
+                                                                    </div>
                                                                 </li>
                                                             ))}
                                                         </ol>
@@ -211,6 +229,15 @@ function Drills({ skills, search, onOpenLesson }) {
                         );
                     })}
                 </div>
+            )}
+
+            {timer && (
+                <DrillTimer
+                    drill={timer.drill}
+                    lessonName={timer.lessonName}
+                    skillName={timer.skillName}
+                    onClose={() => setTimer(null)}
+                />
             )}
         </section>
     );

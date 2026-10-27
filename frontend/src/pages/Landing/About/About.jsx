@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import coachImage from "../../assets/coach.jpg";
+import coachImage from "../../../assets/coach.jpg";
 import "./About.css";
 
 /* About us section. It is rendered inside the .landing page,

@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../../services/api"; // adjust the path to where your api.js is
 import Icon from "./Icon";
-import LessonModal from "./LessonModal";
-import Skills from "./Skills";
-import Drills from "./Drills";
-import Lessons from "./Lessons";
-import Progress from "./Progress";
-import Settings from "./Settings";
+import LessonModal from "../Dashboard/Lessons/LessonModal";
+import Skills from "../Dashboard/Skills/Skills";
+import Drills from "../Dashboard/Drills/Drills";
+import Lessons from "../Dashboard/Lessons/Lessons";
+import Progress from "../Dashboard/Progress/Progress";
+import Settings from "../Dashboard/Settings/Settings";
 import { formatDate, plural } from "./helpers";
 import "./Dashboard.css";
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Icon from "./Icon";
+import Icon from "../Icon";
 import SkillModal from "./SkillModal";
-import { formatDate, plural } from "./helpers";
+import { formatDate, plural } from "../helpers";
 import "./Skills.css";
 
 /* The "Skills" page: shown in the middle of the dashboard.

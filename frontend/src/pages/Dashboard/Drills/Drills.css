@@ -287,6 +287,38 @@
     white-space: nowrap;
 }
 
+.dash .dr-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dash .dr-start {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid var(--green);
+    border-radius: 999px;
+    background: var(--green);
+    color: #fff;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.dash .dr-start:hover {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+}
+
+.dash .dr-start:focus-visible {
+    outline: 3px solid rgba(52, 180, 95, 0.4);
+    outline-offset: 2px;
+}
+
 .dash .dr-none {
     padding: 10px 2px;
     font-size: 13.5px;
@@ -313,7 +345,7 @@
         grid-template-columns: 30px minmax(0, 1fr);
     }
 
-    .dash .dr-time {
+    .dash .dr-actions {
         grid-column: 2;
         justify-self: start;
     }
@@ -321,6 +353,7 @@
 
 @media (prefers-reduced-motion: reduce) {
     .dash .chip,
+    .dash .dr-start,
     .dash .dr-chevron,
     .dash .dr-lesson-link svg {
         transition: none;

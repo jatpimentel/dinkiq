@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import Icon from "./Icon";
-import { formatDate, plural } from "./helpers";
+import Icon from "../Icon";
+import { formatDate, plural } from "../helpers";
 import "./Progress.css";
 
 /* The "Progress" page: how far the player has come.

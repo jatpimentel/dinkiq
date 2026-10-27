@@ -93,6 +93,12 @@ function Icon({ name, size = 18 }) {
                     <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
                 </svg>
             );
+        case "play":
+            return (
+                <svg {...props} fill="currentColor" stroke="none">
+                    <path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z" />
+                </svg>
+            );
         case "chevron":
             return (
                 <svg {...props}>

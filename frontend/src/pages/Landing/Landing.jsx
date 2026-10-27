@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api"; // adjust the path to where your api.js is
 import heroImage from "../../assets/hero-player.jpg";
-import Contact from "./Contact";
-import About from "./About";
+import Contact from "./Contact/Contact";
+import About from "./About/About";
 import Pickleballs from "./Pickleballs";
-import SkillsCarousel from "./Skillscarousel";
+import SkillsCarousel from "./Services/SkillsCarousel";
 import "./Landing.css";
 
 // navbar links: the id must match the id of the section it scrolls to

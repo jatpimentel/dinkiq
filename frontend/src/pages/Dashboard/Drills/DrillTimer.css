@@ -1,0 +1,253 @@
+/* the timer opens on top of the lesson popup when started from there */
+.dash .timer-overlay {
+    z-index: 1100;
+}
+
+.dash .timer-modal {
+    max-width: 460px;
+    text-align: center;
+}
+
+.dash .timer-modal h2 {
+    padding: 0 44px;
+}
+
+.dash .timer-context {
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green-dark);
+}
+
+.dash .timer-desc {
+    margin: 10px auto 0;
+    max-width: 340px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+}
+
+/* ---------- ring ---------- */
+.dash .timer-ring {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 26px auto 8px;
+}
+
+.dash .timer-ring svg {
+    display: block;
+}
+
+.dash .timer-track {
+    stroke: var(--green-soft);
+}
+
+.dash .timer-value {
+    stroke: var(--green);
+    transition: stroke-dasharray 0.25s linear, stroke 0.2s;
+}
+
+.dash .timer-ring.ready .timer-value {
+    stroke: #e5a50a;
+}
+
+.dash .timer-ring.paused .timer-value {
+    stroke: #9aa39d;
+}
+
+.dash .timer-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.dash .timer-text strong {
+    font-size: 58px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.dash .timer-text strong.timer-ready-number {
+    font-size: 84px;
+    color: #a86a00;
+}
+
+.dash .timer-text span {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.dash .timer-ring.done .timer-text strong {
+    color: var(--green-dark);
+}
+
+.dash .timer-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+}
+
+/* ---------- controls ---------- */
+.dash .timer-adjust {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.dash .timer-adjust button {
+    padding: 8px 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.dash .timer-adjust button:hover:not(:disabled) {
+    background: var(--green-soft);
+    border-color: var(--green-line);
+}
+
+.dash .timer-adjust button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.dash .timer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.dash .timer-primary,
+.dash .timer-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 130px;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.dash .timer-primary {
+    border: 1px solid var(--green);
+    background: var(--green);
+    color: #fff;
+}
+
+.dash .timer-primary:hover {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+}
+
+.dash .timer-primary.is-running {
+    background: #fff;
+    color: var(--green-dark);
+}
+
+.dash .timer-primary.is-running:hover {
+    background: var(--green-soft);
+}
+
+.dash .timer-secondary {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    min-width: 0;
+}
+
+.dash .timer-secondary:hover {
+    border-color: var(--green-line);
+    background: var(--bg);
+}
+
+.dash .timer-sound {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--green-dark);
+    cursor: pointer;
+}
+
+.dash .timer-sound[aria-pressed="false"] {
+    color: var(--muted);
+}
+
+.dash .timer-sound:hover {
+    background: var(--bg);
+}
+
+.dash .timer-primary:focus-visible,
+.dash .timer-secondary:focus-visible,
+.dash .timer-sound:focus-visible,
+.dash .timer-adjust button:focus-visible {
+    outline: 3px solid rgba(52, 180, 95, 0.45);
+    outline-offset: 2px;
+}
+
+.dash .timer-done {
+    margin-top: 22px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--green-soft);
+    color: var(--green-dark);
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+    .dash .timer-ring {
+        width: 220px;
+        height: 220px;
+    }
+
+    .dash .timer-ring svg {
+        width: 220px;
+        height: 220px;
+    }
+
+    .dash .timer-text strong {
+        font-size: 48px;
+    }
+
+    .dash .timer-text strong.timer-ready-number {
+        font-size: 70px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dash .timer-value,
+    .dash .timer-primary,
+    .dash .timer-secondary,
+    .dash .timer-adjust button {
+        transition: none;
+    }
+}
