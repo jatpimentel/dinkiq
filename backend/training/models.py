@@ -22,6 +22,10 @@ class Skill(models.Model):
 
 class Difficulty(models.Model):
     name = models.CharField(max_length=50)
+    level = models.PositiveSmallIntegerField(
+        default=0,
+        help_text="Optional order from easiest (1) to hardest. 0 = use the name (Beginner, Novice...).",
+    )
 
     def __str__(self):
         return self.name
@@ -51,7 +55,11 @@ class Drill(models.Model):
         related_name="drills"
     )
     duration_minutes = models.PositiveIntegerField(default=10)
-
+    focus_areas = models.ManyToManyField(
+        "training.TrainingFocus",
+        blank=True,
+        related_name="drills",
+    )
     def __str__(self):
         return self.name
 
@@ -126,3 +134,14 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.email}"
+
+
+
+# Skill assessment tables (keep this at the very bottom of the file)
+from .assessment_models import (  # noqa: E402,F401
+    Assessment,
+    AssessmentAttempt,
+    AssessmentChallenge,
+    AssessmentChallengeResult,
+    TrainingFocus,
+)
