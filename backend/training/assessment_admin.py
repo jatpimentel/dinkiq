@@ -6,10 +6,12 @@ It also replaces the plain Drill admin with one that can link focus areas to a d
 and refuses focus areas that belong to a different skill.
 """
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin.sites import NotRegistered
 from django.db.models import Count
 from django.forms.models import BaseInlineFormSet
+from django.template import engines
+from django.template.response import TemplateResponse
 
 from .models import (
     Assessment,
@@ -111,6 +113,40 @@ class HasFocusFilter(admin.SimpleListFilter):
         return queryset
 
 
+class FocusActionForm(forms.Form):
+    """The small form shown after you pick 'Add a focus area' in the Drills list."""
+
+    _selected_action = forms.CharField(widget=forms.MultipleHiddenInput)
+    focus = forms.ModelChoiceField(
+        queryset=TrainingFocus.objects.select_related("skill"),
+        label="Focus area",
+    )
+
+
+# the confirmation page (uses the normal admin look)
+FOCUS_ACTION_PAGE = engines["django"].from_string(
+    """
+{% extends "admin/base_site.html" %}
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <p>{{ question }}</p>
+  <ul>
+    {% for drill in drills %}
+    <li>{{ drill.name }} <small>({{ drill.lesson.skill.name }}: {{ drill.lesson.name }})</small></li>
+    {% endfor %}
+  </ul>
+  {{ form.as_p }}
+  <input type="hidden" name="action" value="{{ action_name }}">
+  <input type="hidden" name="apply" value="1">
+  <input type="submit" value="{{ button }}">
+  <a href="{{ back_url }}" class="button cancel-link">Cancel</a>
+</form>
+{% endblock %}
+"""
+)
+
+
 try:  # admin.py registered a plain Drill admin before importing this file
     admin.site.unregister(Drill)
 except NotRegistered:
@@ -125,9 +161,73 @@ class DrillAdmin(admin.ModelAdmin):
     search_fields = ("name", "lesson__name", "lesson__skill__name")
     list_select_related = ("lesson__skill",)
     filter_horizontal = ("focus_areas",)
+    actions = ["add_focus_area", "remove_focus_area"]
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("focus_areas")
+
+    def _focus_action(self, request, queryset, mode):
+        """Shared by the add and remove actions."""
+        drills = list(queryset.select_related("lesson__skill"))
+        skill_ids = {d.lesson.skill_id for d in drills}
+        adding = mode == "add"
+
+        if "apply" in request.POST:
+            form = FocusActionForm(request.POST)
+        else:
+            form = FocusActionForm(initial={"_selected_action": [d.pk for d in drills]})
+        form.fields["focus"].queryset = TrainingFocus.objects.filter(
+            skill_id__in=skill_ids
+        ).select_related("skill")
+
+        if "apply" in request.POST and form.is_valid():
+            focus = form.cleaned_data["focus"]
+            wrong = [d.name for d in drills if d.lesson.skill_id != focus.skill_id]
+            if wrong:
+                self.message_user(
+                    request,
+                    f"'{focus.name}' belongs to the skill {focus.skill.name}, but these drills "
+                    f"belong to another skill: {', '.join(wrong)}. Nothing was changed.",
+                    messages.ERROR,
+                )
+                return None
+            for drill in drills:
+                if adding:
+                    drill.focus_areas.add(focus)
+                else:
+                    drill.focus_areas.remove(focus)
+            self.message_user(
+                request,
+                f"{'Added' if adding else 'Removed'} the focus area '{focus.name}' "
+                f"{'to' if adding else 'from'} {len(drills)} drill(s).",
+                messages.SUCCESS,
+            )
+            return None
+
+        context = {
+            **self.admin_site.each_context(request),
+            "title": "Add a focus area" if adding else "Remove a focus area",
+            "question": (
+                "Add a focus area to these drills:"
+                if adding
+                else "Remove a focus area from these drills:"
+            ),
+            "drills": drills,
+            "form": form,
+            "action_name": f"{mode}_focus_area",
+            "button": "Add focus area" if adding else "Remove focus area",
+            "back_url": request.get_full_path(),
+            "opts": self.model._meta,
+        }
+        return TemplateResponse(request, FOCUS_ACTION_PAGE, context)
+
+    @admin.action(description="Add a focus area to the selected drills")
+    def add_focus_area(self, request, queryset):
+        return self._focus_action(request, queryset, "add")
+
+    @admin.action(description="Remove a focus area from the selected drills")
+    def remove_focus_area(self, request, queryset):
+        return self._focus_action(request, queryset, "remove")
 
     @admin.display(description="Focus areas")
     def focus_list(self, obj):
@@ -157,4 +257,3 @@ class AssessmentAttemptAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
-
