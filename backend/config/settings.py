@@ -141,6 +141,11 @@ MAILERS = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://dinkiq-frontend.onrender.com",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://dinkiq-frontend.onrender.com",
     "https://dinkiq.onrender.com",
 ]
 
