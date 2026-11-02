@@ -7,7 +7,7 @@ from .views import register, skills, difficulties, lessons, user_progress, lesso
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
-
+from . import assessment_views
 urlpatterns = [
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
@@ -23,4 +23,11 @@ urlpatterns = [
     path("lessons/<int:lesson_id>/complete/", views.LessonCompleteView.as_view()),
     path("profile/", views.ProfileView.as_view()),
     path("change-password/", views.ChangePasswordView.as_view()),
+    path("assessments/", assessment_views.AssessmentListView.as_view()),
+    path("assessments/history/", assessment_views.AssessmentHistoryView.as_view()),
+    path("assessments/attempts/<int:pk>/", assessment_views.AssessmentAttemptDetailView.as_view()),
+    path("assessments/<int:pk>/", assessment_views.AssessmentDetailView.as_view()),
+    path("assessments/<int:pk>/submit/", assessment_views.AssessmentSubmitView.as_view()),
+    path("skills/<int:pk>/recommendations/", assessment_views.SkillRecommendationsView.as_view()),
+    path("recommendations/", assessment_views.RecommendationsView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
