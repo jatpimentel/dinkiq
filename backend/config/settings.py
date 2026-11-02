@@ -141,7 +141,7 @@ MAILERS = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://your-frontend.onrender.com",
+    "https://dinkiq.onrender.com",
 ]
 
 REST_FRAMEWORK = {
