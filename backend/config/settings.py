@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'training',
 
     "cloudinary_storage",              # must be before staticfiles
-    "django.contrib.staticfiles",
     "cloudinary",    
 ]
 
