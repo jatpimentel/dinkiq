@@ -31,3 +31,5 @@ Thumbs.db
 db.sqlite3*
 .neon
 data*.json
+
+staticfiles/
