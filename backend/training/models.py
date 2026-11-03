@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from PIL import Image, ImageOps
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 # Create your models here.
 class Skill(models.Model):
@@ -12,13 +14,18 @@ class Skill(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        # Only resize when a new file was just uploaded
+        if self.image and not self.image._committed:
+            img = Image.open(self.image)
+            img_format = img.format or "JPEG"
+            if img.height > 800 or img.width > 800:
+                img.thumbnail((800, 800))
+            buffer = BytesIO()
+            if img_format.upper() in ("JPEG", "JPG") and img.mode != "RGB":
+                img = img.convert("RGB")
+            img.save(buffer, format=img_format)
+            self.image = ContentFile(buffer.getvalue(), name=self.image.name)
         super().save(*args, **kwargs)
-        if self.image:
-            img = Image.open(self.image.path)
-            img = ImageOps.exif_transpose(img)  # fix phone photos that load sideways
-            if max(img.size) > 1200:
-                img.thumbnail((1200, 1200))
-                img.save(self.image.path, quality=85, optimize=True)
 
 class Difficulty(models.Model):
     name = models.CharField(max_length=50)
