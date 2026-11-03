@@ -182,7 +182,7 @@ print("CLOUDINARY CHECK:",
 print("CLOUDINARY CONFIG cloud_name set:", bool(cloudinary.config().cloud_name))
 
 STORAGES = {
-    "default": {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"},
+    "default": {"BACKEND": "training.storage.ConfiguredMediaStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
 }
 
