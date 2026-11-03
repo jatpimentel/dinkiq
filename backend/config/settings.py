@@ -179,6 +179,8 @@ print("CLOUDINARY CHECK:",
       "| secret set:", bool(os.environ.get("CLOUDINARY_API_SECRET")),
       "| url set:", bool(os.environ.get("CLOUDINARY_URL")))
 
+print("CLOUDINARY CONFIG cloud_name set:", bool(cloudinary.config().cloud_name))
+
 STORAGES = {
     "default": {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
