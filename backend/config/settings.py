@@ -173,6 +173,12 @@ cloudinary.config(
     secure=True,
 )
 
+print("CLOUDINARY CHECK:",
+      "name set:", bool(os.environ.get("CLOUDINARY_CLOUD_NAME")),
+      "| key set:", bool(os.environ.get("CLOUDINARY_API_KEY")),
+      "| secret set:", bool(os.environ.get("CLOUDINARY_API_SECRET")),
+      "| url set:", bool(os.environ.get("CLOUDINARY_URL")))
+
 STORAGES = {
     "default": {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
