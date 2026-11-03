@@ -159,9 +159,9 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.environ.get("ngsfb9kx"),
-    "API_KEY": os.environ.get("437719374582784"),
-    "API_SECRET": os.environ.get("wZVgn2ioCi89_wsWl5YYIr-Fk5w"),
+    "CLOUD_NAME": os.environ["CLOUDINARY_CLOUD_NAME"],
+    "API_KEY": os.environ["CLOUDINARY_API_KEY"],
+    "API_SECRET": os.environ["CLOUDINARY_API_SECRET"],
 }
 
 import cloudinary
